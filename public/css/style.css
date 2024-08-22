@@ -1,0 +1,152 @@
+ul li {
+    list-style: none;
+}
+ul li a {
+    text-decoration: none;
+    position: relative;
+    cursor: pointer;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+#search {
+    width: 100%;
+    outline: none;
+    border: 1px solid rgb(218, 215, 215);
+    border-radius: 4px;
+    padding: 8px;
+}
+
+#search:focus {
+    box-shadow: 1px 1px 6px rgb(204, 203, 203);
+}
+
+ul li a::after,
+ul li .logout::after {
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 0%;
+    top: 110%;
+    left: 0;
+    transition: all 0.5s ease;
+    border: none;
+}
+ul li a::after {
+    border-bottom: 2px solid rgb(3, 139, 250);
+}
+
+ul li .logout::after {
+    border-bottom: 2px solid rgb(253, 93, 93);
+}
+
+ul li a:hover:after,
+ul li .logout:hover:after {
+    width: 100%;
+}
+.nav-links ul li .sub-menu {
+    display: none;
+    width: fit-content;
+    padding-block: 0.5rem;
+    left: -4rem;
+    z-index: 1;
+    position: absolute !important;
+    background: none;
+}
+
+.nav-links ul li .sub-menu li {
+    width: 130%;
+    text-align: left;
+    position: relative !important;
+    left: -0.2rem;
+    padding-block: 0.5rem;
+    padding-inline: 0.2rem;
+    transition: all 0.1s ease;
+    background-color: rgb(247, 247, 247);
+}
+.nav-links ul li .sub-menu li:hover {
+    padding-left: 0.4rem;
+    padding-right: -0.2rem;
+    border-left: 5px solid rgb(3, 139, 250);
+}
+.nav-links ul li {
+    position: relative !important;
+}
+
+.nav-links ul li:hover .sub-menu {
+    display: block;
+    position: absolute;
+}
+
+.heading a {
+    text-decoration: none;
+}
+
+tr {
+    cursor: pointer;
+}
+
+.buttons {
+    width: max-content;
+    margin-left: -3rem;
+    height: fit-content;
+}
+.buttons button {
+    margin-top: 1rem;
+    display: block;
+    width: 100%;
+}
+.section {
+    height: 25rem;
+}
+
+footer {
+    height: 3rem;
+}
+
+#addProductForBill {
+    position: absolute;
+    top: 57%;
+    left: 3.5%;
+    width: 73.4rem;
+}
+.description ul li {
+    list-style: circle !important;
+}
+.amount-description {
+    text-align: right !important;
+    width: 50%;
+    margin-left: 2rem;
+    margin-block: 1rem;
+}
+
+.amount-description span {
+    margin-left: 2rem;
+}
+
+#viewByStock {
+    position: fixed;
+    top: 5rem;
+    left: 20rem;
+}
+
+#viewByStock .table-info .head-div {
+    position: relative;
+}
+
+#viewByStock .table-info .head-div img {
+    height: 0.8rem;
+    width: 0.8rem;
+    position: absolute;
+    left: 39rem;
+    top: -0.5rem;
+    cursor: pointer;
+}
+#viewByStock .table-info .table-data {
+    height: 22rem;
+}
+
+#viewByStock .table-info .selection-btn button {
+    width: 8rem;
+}
