@@ -33,9 +33,8 @@ class JsonController extends Controller
             $query->whereRaw('DATE(`stocks`.`created_at`)=?', $date);
         })->get();
 
-        $expiries = Dealer::withWhereHas('expiryEntry', function ($query) use ($date) {
-            $query->whereRaw('DATE(`expiries`.`created_at`)=?', $date);
-        })->get();
+        $expiries = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`)=?', $date)->get();
+
         $res = $res1 = $res2 = $res3 = false;
         if ($billInfo->count() > 0) {
             $res = JsonController::insertIntoFile($billInfo, 'bill');

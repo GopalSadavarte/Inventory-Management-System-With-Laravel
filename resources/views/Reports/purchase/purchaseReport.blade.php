@@ -9,9 +9,9 @@
         @endsession
         <div class="report w-100 p-0 m-0">
             <div class="heading my-3 text-center d-flex col-10">
-                <h2 class="heading text-uppercase text-success col-4">
+                <h3 class="heading text-uppercase text-success col-4">
                     <u>Purchase Report</u>
-                </h2>
+                </h3>
                 <div class="mx-2 col-10 d-flex">
                     <label for="search-date1" class="col-1 fs-5 my-auto">From:</label>
                     <input type="date" id="search-date1" class="form-control">
@@ -21,7 +21,7 @@
                     <button class="btn btn-danger col-1 mx-1" id="clear-btn">clear</button>
                 </div>
             </div>
-            @if (!empty($products) && $products!=null)
+            @if (!empty($products) && count($products)>0)
                 <div class="report-content">
                     <div class="info overflow-scroll">
                         <table class="table table-striped table-bordered">

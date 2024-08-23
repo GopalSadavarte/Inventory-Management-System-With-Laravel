@@ -22,4 +22,9 @@ class Expiry extends Model
     {
         return $this->belongsTo(Dealer::class, 'dealer_id');
     }
+
+    public function scopeWithProductAndDealer($query)
+    {
+        $query->with('product', 'dealer');
+    }
 }

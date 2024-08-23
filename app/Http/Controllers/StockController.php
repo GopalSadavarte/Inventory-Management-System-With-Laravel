@@ -209,16 +209,35 @@ class StockController extends Controller implements StockInterface
 
     public function getAvailableStock()
     {
-        return view('Reports.stock.availableStock');
+        $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id')
+            ->withWhereHas('product', function ($query) {
+                $query->with('group', 'subGroup');
+            })->havingRaw('SUM(`current_quantity`)>?', [0])
+            ->groupBy('product_id')
+            ->get();
+        return view('Reports.stock.availableStock', compact('products'));
     }
 
     public function getRequiredStock()
     {
-        return view('Reports.stock.demandedStock');
+        $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id')
+            ->withWhereHas('product', function ($query) {
+                $query->with('group', 'subGroup');
+            })->havingRaw('SUM(`current_quantity`)<=?', [0])
+            ->groupBy('product_id')
+            ->get();
+        return view('Reports.stock.demandedStock', compact('products'));
     }
 
     public function getExpired()
     {
-        return view('Reports.stock.expiredStock');
+        $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id,EXP')
+            ->withWhereHas('product', function ($query) {
+                $query->with('group', 'subGroup');
+            })->where('EXP', '<=', date('Y-m-d'))
+            ->havingRaw('SUM(`current_quantity`)>?', [0])
+            ->groupBy('product_id', 'EXP')
+            ->get();
+        return view('Reports.stock.expiredStock', compact('products'));
     }
 }

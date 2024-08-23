@@ -7,8 +7,12 @@ use App\Models\Expiry;
 use App\Models\ExpiryEntry;
 use App\Models\Inventory;
 use App\Models\Product;
+use DateTime;
+use DateTimeZone;
 use Exception;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 
 interface ExpiryInterface
@@ -172,7 +176,6 @@ class ExpiryController extends Controller implements ExpiryInterface
     public function weeklyReport()
     {
         $products = Inventory::getFromInventory()->get();
-        // return $products;
         return View::make('Reports.expiry.weeklyReport', compact('products'));
     }
 
@@ -190,8 +193,11 @@ class ExpiryController extends Controller implements ExpiryInterface
 
     public function returnExpReport()
     {
-        $products = Expiry::with('product', 'dealer')->get();
-
+        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $start = $date->modify('-10 days')->format('Y-m-d');
+        $product = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`) BETWEEN ? AND ?', [$start, date('Y-m-d')])->get();
+        $fromFile = File::get(public_path('json/expiry.json'));
+        $products = ($fromFile == '') ? $product : Json::decode(Json::encode(array_merge(Json::decode($fromFile), Json::decode($product))), false);
         return view('Reports.expiry.returnExpReport', compact('products'));
     }
 }
