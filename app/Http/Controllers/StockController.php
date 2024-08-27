@@ -77,13 +77,13 @@ class StockController extends Controller implements StockInterface
                 $product_stock->GST = $request->gst[$i];
                 $product_stock->save();
 
-                $invent = Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->limit(1)->get();
+                $invent = Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->where('purchase_rate', $request->purchase_rate[$i])->limit(1)->get();
                 if ($invent->count() == 1) {
                     $c = $invent[0]->current_quantity;
                     $n = $request->qty[$i];
                     $newStock = $c + $n;
 
-                    Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->update([
+                    Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->where('purchase_rate', $request->purchase_rate[$i])->update([
                         'current_quantity' => $newStock,
                     ]);
                 } else {
@@ -142,8 +142,8 @@ class StockController extends Controller implements StockInterface
             $oldInfo = session()->remove('stockInfo');
             $products = collect($oldInfo[0]->product);
             $products->each(function ($product) {
-                $current = Inventory::where('product_id', $product->id)->where('sale_rate', $product->pivot->sale_rate)->get();
-                Inventory::where('product_id', $product->id)->where('sale_rate', $product->pivot->sale_rate)->update([
+                $current = Inventory::where('product_id', $product->id)->where('sale_rate', $product->pivot->sale_rate)->where('purchase_rate', $product->pivot->purchase_rate)->get();
+                Inventory::where('product_id', $product->id)->where('sale_rate', $product->pivot->sale_rate)->where('purchase_rate', $product->pivot->purchase_rate)->update([
                     'current_quantity' => $current[0]->current_quantity - $product->pivot->addedQuantity,
                 ]);
             });
@@ -161,13 +161,13 @@ class StockController extends Controller implements StockInterface
                     $product_stock->GST = $request->gst[$i];
                     $product_stock->save();
 
-                    $invent = Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->limit(1)->get();
+                    $invent = Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->where('purchase_rate', $request->purchase_rate[$i])->limit(1)->get();
                     if ($invent->count() == 1) {
                         $c = $invent[0]->current_quantity;
                         $n = $request->qty[$i];
                         $newStock = $c + $n;
 
-                        Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->update([
+                        Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->where('purchase_rate', $request->purchase_rate)->update([
                             'current_quantity' => $newStock,
                         ]);
                     } else {
@@ -209,10 +209,8 @@ class StockController extends Controller implements StockInterface
 
     public function getAvailableStock()
     {
-        $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id')
-            ->withWhereHas('product', function ($query) {
-                $query->with('group', 'subGroup');
-            })->havingRaw('SUM(`current_quantity`)>?', [0])
+        $products = Inventory::selectCurrentQtyWithPId()
+            ->havingRaw('SUM(`current_quantity`)>?', [0])
             ->groupBy('product_id')
             ->get();
         return view('Reports.stock.availableStock', compact('products'));
@@ -220,10 +218,8 @@ class StockController extends Controller implements StockInterface
 
     public function getRequiredStock()
     {
-        $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id')
-            ->withWhereHas('product', function ($query) {
-                $query->with('group', 'subGroup');
-            })->havingRaw('SUM(`current_quantity`)<=?', [0])
+        $products = Inventory::selectCurrentQtyWithPId()
+            ->havingRaw('SUM(`current_quantity`)<=?', [0])
             ->groupBy('product_id')
             ->get();
         return view('Reports.stock.demandedStock', compact('products'));

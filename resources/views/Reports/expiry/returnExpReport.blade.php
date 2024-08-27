@@ -62,17 +62,21 @@
                                                     @php
                                                         $j=1
                                                     @endphp
-                                                    @foreach ($product->product as $item)
-                                                        <tr>
-                                                            <td>{{$j++}}</td>
-                                                            <td>{{$item->product_name}}</td>
-                                                            <td>{{$item->pivot->returnQuantity}}</td>
-                                                            <td>{{$item->pivot->rate}}</td>
-                                                            <td>{{$item->pivot->MRP}}</td>
-                                                            <td>{{$item->pivot->GST}}</td>
-                                                            <td>{{$item->pivot->expiry_date}}</td>
-                                                            <td>{{substr($product->created_at,0,10)}}</td>
-                                                        </tr>
+                                                    @foreach ($products as $prod)
+                                                        @if ($prod->dealer->id == $product->dealer->id)
+                                                           @foreach ($prod->product as $item)
+                                                                <tr>
+                                                                    <td>{{$j++}}</td>
+                                                                    <td>{{$item->product_name}}</td>
+                                                                    <td>{{$item->pivot->returnQuantity}}</td>
+                                                                    <td>{{$item->pivot->rate}}</td>
+                                                                    <td>{{$item->pivot->MRP}}</td>
+                                                                    <td>{{$item->pivot->GST}}</td>
+                                                                    <td>{{$item->pivot->expiry_date}}</td>
+                                                                    <td>{{substr($prod->created_at,0,10)}}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
                                                     @endforeach
                                                 </table>
                                             </td>

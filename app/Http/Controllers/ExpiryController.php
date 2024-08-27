@@ -37,7 +37,7 @@ class ExpiryController extends Controller implements ExpiryInterface
         $dealers = Dealer::all();
         $products = Product::all();
 
-        $id = Expiry::select('expiry_entry_id')->orderByDesc('expiry_entry_id')->limit(1)->get();
+        $id = Expiry::select('expiry_entry_id')->whereRaw('DATE(`created_at`)=?', date('Y-m-d'))->orderByDesc('expiry_entry_id')->limit(1)->get();
         $newEntry = ($id->count() == 1) ? $id[0]->expiry_entry_id + 1 : 1;
         return view('Reports.expiry.expiryEntry', compact('dealers', 'products', 'newEntry'));
     }
@@ -198,6 +198,7 @@ class ExpiryController extends Controller implements ExpiryInterface
         $product = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`) BETWEEN ? AND ?', [$start, date('Y-m-d')])->get();
         $fromFile = File::get(public_path('json/expiry.json'));
         $products = ($fromFile == '') ? $product : Json::decode(Json::encode(array_merge(Json::decode($fromFile), Json::decode($product))), false);
+
         return view('Reports.expiry.returnExpReport', compact('products'));
     }
 }

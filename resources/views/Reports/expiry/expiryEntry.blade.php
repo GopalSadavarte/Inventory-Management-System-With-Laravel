@@ -8,7 +8,7 @@
             You must provide atleast dealer name or all info for accurate report!
         </span>
         @session('exception')
-            <x-alert id="alert-box" message="{{session('exception')}}"/>
+            <x-alert id="alert-box" message="{!!session('exception')!!}"/>
         @endsession
     </div>
     <form id="expiryEntryForm" method="post" action="{{ route('expiry.store') }}">

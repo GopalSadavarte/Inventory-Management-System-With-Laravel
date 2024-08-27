@@ -21,4 +21,12 @@ class Inventory extends Model
             $query->with('group', 'subGroup');
         })->orderBy('EXP')->where('current_quantity', '>', 0);
     }
+
+    public function scopeSelectCurrentQtyWithPId($query)
+    {
+        $query->selectRaw('SUM(`current_quantity`) as CQTY,product_id')
+            ->withWhereHas('product', function ($query) {
+                $query->with('group', 'subGroup');
+            });
+    }
 }
