@@ -40,8 +40,8 @@
                                         <button class="btn btn-warning col-1 my-1 text-white yearlyExploreMoreBtn">&hArr;</button>
                                     </div>
                                     <hr class="col-8">
-                                    <div class="product-info">
-                                        <table class="table table-striped table-bordered">
+                                    <div class="product-info d-none">
+                                        <table class="table table-striped table-bordered product-info-table">
                                             <tr class="table-row">
                                                 <th>Sr.No.</th>
                                                 <th>Product ID</th>
@@ -56,8 +56,8 @@
                                                 @if ($prod->product->group->group_id==$item->product->group->group_id)
                                                     <tr>
                                                         <td>{{$j++}}</td>
-                                                        <td>{{$prod->product->product_id}}</td>
-                                                        <td>{{$prod->product->product_name}}</td>
+                                                        <td class="product-id">{{$prod->product->product_id}}</td>
+                                                        <td class="product-name">{{$prod->product->product_name}}</td>
                                                         <td>{{$prod->product->subgroup->sub_group_name}}</td>
                                                         <td>{{$prod->CQTY}}</td>
                                                     </tr>
@@ -68,9 +68,14 @@
                                 </div>
                             @endif
                         @endforeach
+                        <div class="d-none w-100 text-center my-2">
+                            <h4 class="heading text-center text-dark" id="notFoundText">
+                                <u>No Data Found!</u>
+                            </h4>
+                        </div>
                         <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
                             <div class="w-25 mx-auto d-flex">
-                                <a href="#" id="printButton" class="btn btn-primary w-50">Print</a>
+                                <a href="{{route('availableStockPrint')}}" id="printButton" class="btn btn-primary w-50">Print</a>
                                 <a href="{{route('stock.index')}}" class="btn btn-success mx-2 w-50">Back</a>
                             </div>
                         </div>
@@ -87,5 +92,5 @@
     </div>
 @endsection
 @section('bottom-script-section')
-    <script type="module" src="{{asset('js/Report.js')}}"></script>
+    <script type="module" src="{{asset('js/stockReports.js')}}"></script>
 @endsection

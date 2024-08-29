@@ -70,6 +70,7 @@
                             <li class="fs-6">
                                 <a href="{{route('getExpired')}}" class="text-dark">Expired</a>
                             </li>
+                            <li><a href="{{route('getStockReport')}}" class="text-dark">Stock Entry Report</a></li>
                         </ul>
                     </li>
                     <li class="fs-6 col-1">

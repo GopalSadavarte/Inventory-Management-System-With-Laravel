@@ -19,4 +19,9 @@ class Stock extends Model
     {
         return $this->belongsTo(Dealer::class);
     }
+
+    public function scopeWithProductAndDealer($query)
+    {
+        return $query->with('product', 'dealer');
+    }
 }

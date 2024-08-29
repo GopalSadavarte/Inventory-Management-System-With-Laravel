@@ -19,4 +19,9 @@ class Purchase extends Model
     {
         return $this->belongsTo(Dealer::class, 'dealer_id');
     }
+
+    public function scopeWithProductAndDealer($query)
+    {
+        return $query->with('product', 'dealer');
+    }
 }

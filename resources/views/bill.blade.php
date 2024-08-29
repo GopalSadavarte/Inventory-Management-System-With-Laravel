@@ -3,7 +3,7 @@
     Sale Bill
 @endpush
 @section('main-section')
-<div class="bg-light px-4 my-2 py-2 shadow rounded mx-4 h-100">
+<div class="bg-light px-4 my-2 py-2 shadow rounded mx-4 h-100" id="bill-Entry">
     <div class="mt-2">
         <h3 class="heading">Sale Bill</h3>
     </div>

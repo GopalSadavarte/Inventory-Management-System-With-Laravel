@@ -10,7 +10,13 @@ use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Stock;
+use Barryvdh\DomPDF\Facade\Pdf;
+use DateTime;
+use DateTimeZone;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\View;
 
 interface StockInterface
 {
@@ -19,9 +25,14 @@ interface StockInterface
     public function show(string $id, string $date);
     public function update(Request $request, string $id, string $date);
     public function destroy(string $id, string $date);
-    public function getAvailableStock();
-    public function getRequiredStock();
-    public function getExpired();
+    public function getAvailableStock(string $data);
+    public function getRequiredStock(string $data);
+    public function getExpired(string $data);
+    public function printAvailableStock();
+    public function printRequiredStock();
+    public function printExpiredStock();
+    public function getProductStockEntryByDealer();
+    public function printProductStockEntryReport();
 }
 
 class StockController extends Controller implements StockInterface
@@ -107,7 +118,7 @@ class StockController extends Controller implements StockInterface
     public function show(string $id, string $date)
     {
         $get = Stock::with('product')->with('dealer')->whereRaw('DATE(`stocks`.`created_at`)=?', $date)->where('stock_id', $id)->get();
-        if ($get != null) {
+        if ($get->count() > 0) {
             session()->put(['stockInfo' => $get]);
             return response()->json($get);
         } else {
@@ -207,25 +218,34 @@ class StockController extends Controller implements StockInterface
         }
     }
 
-    public function getAvailableStock()
+    public function getAvailableStock(string $data = null)
     {
         $products = Inventory::selectCurrentQtyWithPId()
             ->havingRaw('SUM(`current_quantity`)>?', [0])
             ->groupBy('product_id')
             ->get();
+
+        if ($data != null) {
+            return $products;
+        }
+        // return $products;
         return view('Reports.stock.availableStock', compact('products'));
     }
 
-    public function getRequiredStock()
+    public function getRequiredStock(string $data = null)
     {
         $products = Inventory::selectCurrentQtyWithPId()
             ->havingRaw('SUM(`current_quantity`)<=?', [0])
             ->groupBy('product_id')
             ->get();
+        if ($data != null) {
+            return $products;
+        }
+
         return view('Reports.stock.demandedStock', compact('products'));
     }
 
-    public function getExpired()
+    public function getExpired(string $data = null)
     {
         $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id,EXP')
             ->withWhereHas('product', function ($query) {
@@ -234,6 +254,61 @@ class StockController extends Controller implements StockInterface
             ->havingRaw('SUM(`current_quantity`)>?', [0])
             ->groupBy('product_id', 'EXP')
             ->get();
+        if ($data != null) {
+            return $products;
+        }
         return view('Reports.stock.expiredStock', compact('products'));
+    }
+
+    public function printAvailableStock()
+    {
+        $products = StockController::getAvailableStock('get');
+        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Available Stock Report');
+    }
+    public function printRequiredStock()
+    {
+        $products = StockController::getRequiredStock('get');
+        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Required Stock Report');
+    }
+    public function printExpiredStock()
+    {
+        $products = StockController::getExpired('get');
+        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Expired Stock Report');
+    }
+
+    public function getProductStockEntryByDealer()
+    {
+        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $date = $date->modify('-10 day')->format('Y-m-d');
+        $products = File::get(public_path('./json/stock.json'));
+        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
+        $products = ($products == '') ? Json::decode($stocks, false) : Json::decode(array_merge(Json::decode($products), Json::decode($stocks)), false);
+        return View::make('Reports.stock.stockEntryReport', compact('products'));
+    }
+
+    public function printProductStockEntryReport()
+    {
+        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $date = $date->modify('-10 day')->format('Y-m-d');
+        $products = File::get(public_path('./json/stock.json'));
+        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
+        $products = ($products == '') ? Json::decode($stocks, false) : Json::decode(array_merge(Json::decode($products), Json::decode($stocks)), false);
+        return StockController::makePdf($products, 'Reports/pdf/stockReportByDealer');
+    }
+
+    public function printStockReportByDates(string $from, string $to)
+    {
+        $products = Stock::withProductAndDealer()->get();
+        return StockController::makePdf($products, 'Reports/pdf/stockReportByDealer');
+    }
+
+    private function makePdf(object | array $products, string $view, string $report = null)
+    {
+        return Pdf::loadView($view, compact('products', 'report'), [
+            'css' => [
+                File::get(public_path('css/style.css')),
+                File::get(public_path('css/bootstrap.css')),
+            ],
+        ])->setPaper('A4', 'landscape')->download();
     }
 }

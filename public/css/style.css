@@ -104,11 +104,13 @@ tr {
 footer {
     height: 3rem;
 }
-
+#bill-Entry {
+    position: relative;
+}
 #addProductForBill {
     position: absolute;
-    top: 57%;
-    left: 3.5%;
+    top: 34%;
+    left: 2%;
     width: 73.4rem;
 }
 .description ul li {

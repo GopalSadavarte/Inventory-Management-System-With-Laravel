@@ -23,19 +23,20 @@ export function reportOp () {
             else ele.innerHTML = '&dArr;'
         })
     })
-
-    clearBtn.addEventListener('click', e => {
-        e.preventDefault()
-        if (fromDate.value != '' && toDate.value != '') {
-            fromDate.value = ''
-            toDate.value = ''
-            expDates.forEach(ele => {
-                let p = ele.parentElement
-                p.style.display = ''
-            })
-            displayAll()
-        }
-    })
+    if (clearBtn != null) {
+        clearBtn.addEventListener('click', e => {
+            e.preventDefault()
+            if (fromDate.value != '' && toDate.value != '') {
+                fromDate.value = ''
+                toDate.value = ''
+                expDates.forEach(ele => {
+                    let p = ele.parentElement
+                    p.style.display = ''
+                })
+                displayAll()
+            }
+        })
+    }
 }
 
 export function getWeekNumber (date) {

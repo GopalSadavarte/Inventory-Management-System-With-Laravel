@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 date_default_timezone_set('Asia/Kolkata');
 use App\Models\Bill;
-use App\Models\Dealer;
 use App\Models\Expiry;
 use App\Models\Purchase;
 use App\Models\Stock;
@@ -25,13 +24,9 @@ class JsonController extends Controller
             ->whereRaw('DATE(`created_at`)=?', $date)
             ->get();
 
-        $purchaseEntries = Dealer::withWhereHas('purchaseEntry', function ($query) use ($date) {
-            $query->whereRaw('DATE(`purchases`.`created_at`)=?', $date);
-        })->get();
+        $purchaseEntries = Purchase::withProductAndDealer()->whereRaw('DATE(`purchases`.`created_at`)=?', $date)->get();
 
-        $stocks = Dealer::withWhereHas('stockEntry', function ($query) use ($date) {
-            $query->whereRaw('DATE(`stocks`.`created_at`)=?', $date);
-        })->get();
+        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`stocks`.`created_at`)=?', $date)->get();
 
         $expiries = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`)=?', $date)->get();
 
