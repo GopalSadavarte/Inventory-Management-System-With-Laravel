@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 date_default_timezone_set('Asia/Kolkata');
 use App\Models\Dealer;
 use App\Models\Inventory;
-use App\Models\PurchaseEntry;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\PurchaseEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use DateTimeZone;
@@ -277,7 +277,7 @@ class PurchaseController extends Controller implements PurchaseInterface
 
         $purchaseEntriesWithoutDealer = Purchase::with('product')->whereRaw('DATE(`purchases`.`created_at`) BETWEEN ? AND ?', [$date, date('Y-m-d')])->where('dealer_id', null)->get();
 
-        $products = PurchaseController::verifyingData($products, $purchaseEntries, $purchaseEntriesWithoutDealer);
+        $products = $this->verifyingData($products, $purchaseEntries, $purchaseEntriesWithoutDealer);
         if ($products != null) {
             $products = Json::encode($products);
             $products = Json::decode($products, false);
@@ -316,7 +316,7 @@ class PurchaseController extends Controller implements PurchaseInterface
         })->get();
         $withoutDealer = Purchase::with('product')->whereRaw('DATE(`purchases`.`created_at`) BETWEEN ? AND ?', [$from, $to])->where('dealer_id', null)->get();
         $allProducts = Product::all();
-        $products = PurchaseController::verifyingData($products, $purchaseEntries, $withoutDealer);
+        $products = $this->verifyingData($products, $purchaseEntries, $withoutDealer);
         if ($products != null) {
             $products = Json::encode($products);
             $products = Json::decode($products, false);
@@ -327,7 +327,7 @@ class PurchaseController extends Controller implements PurchaseInterface
 
     public function getPurchaseReport()
     {
-        $d = PurchaseController::getDataFromFile();
+        $d = $this->getDataFromFile();
         $products = $d[0];
         $allProducts = $d[1];
         return view('Reports/purchase/purchaseReport', compact('products', 'allProducts'));
@@ -335,7 +335,7 @@ class PurchaseController extends Controller implements PurchaseInterface
 
     public function printPurchaseReport()
     {
-        $data = PurchaseController::getDataFromFile();
+        $data = $this->getDataFromFile();
         $products = $data[0];
         $allProducts = $data[1];
         // return $products;
@@ -349,10 +349,10 @@ class PurchaseController extends Controller implements PurchaseInterface
 
     public function printPurchaseReportByDates(string $from, string $to)
     {
-        $data = PurchaseController::getDataFromFileByDates($from, $to);
+        $data = $this->getDataFromFileByDates($from, $to);
         $products = $data[0];
         $allProducts = $data[1];
-        if ($products != null) {
+        if (count($products) > 0) {
             return Pdf::loadView('Reports/pdf/purchaseReportPrint', compact('products', 'allProducts'), [
                 'css' => [
                     File::get(public_path('./css/style.css')),

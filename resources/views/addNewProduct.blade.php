@@ -4,7 +4,7 @@
 @endpush
 @section('main-section')
     <div class="container mt-3 shadow-lg p-5 bg-light rounded-3">
-            <div class="alert
+        <div class="alert
                 {{-- @if (!isset($_SESSION['success']) && !isset($_SESSION['update']) && !isset($_SESSION['delete']))d-none @endif
                 @isset($_SESSION['success'])alert-success @endisset
                 @isset($_SESSION['update'])alert-primary @endisset

@@ -101,7 +101,7 @@ function manageDynamicRows () {
     pId.forEach(id => {
         id.addEventListener('keyup', e => {
             e.preventDefault()
-            if (e.key == 'q' && e.altKey) {
+            if (e.key == 'q' && e.altKey && !id.hasAttribute('readonly')) {
                 document
                     .getElementById('product-container')
                     .classList.remove('d-none')
@@ -215,7 +215,7 @@ function manageDynamicRows () {
     productId.forEach(ele => {
         ele.addEventListener('keyup', e => {
             e.preventDefault()
-            if (e.key == 'Enter') {
+            if (e.key == 'Enter' && !ele.hasAttribute('readonly')) {
                 fetch(`product/${ele.value.trim()}`)
                     .then(res => res.json())
                     .then(data => {

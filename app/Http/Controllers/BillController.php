@@ -126,7 +126,7 @@ class BillController extends Controller implements BillInterface
         }
 
         if (!empty($request->customerId) || !empty($request->customerName)) {
-            $customer = BillController::insertIntoCustomer($request);
+            $customer = $this->insertIntoCustomer($request);
         } else {
             $customer = null;
         }
@@ -246,7 +246,7 @@ class BillController extends Controller implements BillInterface
         }
 
         if (!empty($request->customerId) || !empty($request->customerName)) {
-            $customer = BillController::insertIntoCustomer($request);
+            $customer = $this->insertIntoCustomer($request);
         } else {
             $customer = null;
         }
@@ -267,7 +267,7 @@ class BillController extends Controller implements BillInterface
                 'created_at' => $created_at[0]->created_at,
                 'updated_at' => now('Asia/Kolkata'),
             ]);
-            BillController::recoverInventory($del);
+            $this->recoverInventory($del);
             for ($i = 0; $i < count($request->productId); $i++) {
                 $res = CustomerProduct::insert([
                     "p_id" => $request->productPId[$i],
@@ -310,7 +310,7 @@ class BillController extends Controller implements BillInterface
         $res = Bill::where('dayWiseBillNumber', '=', $billNo)
             ->whereRaw('DATE(`bills`.`created_at`)=?', $date)
             ->delete();
-        BillController::recoverInventory($res);
+        $this->recoverInventory($res);
         return redirect()->route('bill.index');
     }
 }

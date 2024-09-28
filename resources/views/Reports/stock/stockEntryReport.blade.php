@@ -23,7 +23,7 @@ Stock Report
             </div>
             @if (!empty($products) && count($products)>0)
                 <div class="report-content">
-                    <div class="info overflow-scroll">
+                    <div class="info overflow-scroll" id="entry-container-by-dealer">
                         <table class="table table-striped table-bordered">
                             <tr class="table-row">
                                 <th>Sr.No.</th>
@@ -48,7 +48,7 @@ Stock Report
                                         </tr>
                                         <tr class="d-none">
                                             <td colspan="6">
-                                                <table class="table table-striped table-bordered mx-2 px-2">
+                                                <table class="table table-striped table-bordered mx-2 px-2 product-info-table">
                                                     <tr>
                                                         <th>Sr.No.</th>
                                                         <th>Product Name</th>
@@ -71,7 +71,7 @@ Stock Report
                                                                     <td>{{$item->pivot->sale_rate}}</td>
                                                                     <td>{{$item->pivot->MRP}}</td>
                                                                     <td>{{$item->pivot->addedQuantity}}</td>
-                                                                    <td class="purchase-date">{{substr($product->created_at,0,10)}}</td>
+                                                                    <td class="purchase-date-by-dealer">{{substr($product->created_at,0,10)}}</td>
                                                                 </tr>
                                                             @endforeach
                                                         @endisset
@@ -128,11 +128,25 @@ Stock Report
                             </div>
                         </div>
                     @endif
-                    <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
-                    <div class="w-25 mx-auto d-flex">
-                            <a href="{{route('stock.print')}}" id="printButton" class="btn btn-primary w-50">Print</a>
-                            <a href="{{route('stock.index')}}" class="btn btn-success mx-2 w-50">Back</a>
+                    <div class="container d-none" id="notFoundText">
+                        <div class="heading">
+                            <h1 class="heading fs-3 text-center">
+                                Not Found!
+                            </h1>
+                        </div>
                     </div>
+                    <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
+                        <div class="w-25 mx-auto d-flex">
+                            <a href="{{route('stock.print')}}"  id="printButton" class="btn btn-primary w-50">
+                                Print
+                            </a>
+                            <a href="{{route('stock.printByDate')}}" id="printByDateButton" class="btn btn-primary w-50 d-none">
+                                Print
+                            </a>
+                            <a href="{{route('stock.index')}}" class="btn btn-success mx-2 w-50">
+                                Back
+                            </a>
+                        </div>
                     </div>
                 </div>
             @else

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Stock Report</title>
+    <title>{{$report}}</title>
     <style>{{$css[0]}}</style>
     <style>{{$css[1]}}</style>
     <style>
@@ -18,7 +18,7 @@
         <div class="content">
             <hr>
             <div class="heading">
-                <h1 class="heading text-dark w-100 text-center">Stock Report</h1>
+                <h1 class="heading text-dark w-100 text-center">{{$report}}</h1>
             </div>
             <hr>
             <div class="firm-info my-2 mx-3">
@@ -57,8 +57,8 @@
                     @php $i=1;$arr=[];$count=0; @endphp
                     @foreach ($products as $product)
                         @isset($product->dealer)
-                            @if (!in_array($product->dealer->id,$arr))
-                                @php array_push($arr,$product->dealer->id) @endphp
+                            @if (!in_array($product->id,$arr))
+                                @php array_push($arr,$product->id) @endphp
                                 <div class="dealer-info">
                                     <div class="row">
                                         <div class="col-12">
@@ -119,7 +119,8 @@
                                             <th>Qty.</th>
                                             <th>GST</th>
                                             <th>With GST</th>
-                                            <th>Pur.Date</th>
+                                            <th>EXP</th>
+                                            <th>Date</th>
                                             <th>Total</th>
                                         </tr>
                                         @php
@@ -127,28 +128,27 @@
                                             $sum=0;
                                         @endphp
                                         @foreach ($products as $data)
-                                            @isset ($data->dealer->id)
-                                                @if ($data->dealer->id == $product->dealer->id)
-                                                    @foreach ($data->product as $item)
-                                                        <tr class="text-center">
-                                                            @php
-                                                                $withGST=($item->pivot->purchase_rate + (($item->pivot->purchase_rate*$item->pivot->GST)/100));
-                                                                $subTotal=$withGST*$item->pivot->addedQuantity;
-                                                                $sum=$sum+$subTotal;
-                                                            @endphp
-                                                            <td>{{$j++}}</td>
-                                                            <td>{{$item->product_name}}</td>
-                                                            <td>{{$item->pivot->purchase_rate}}</td>
-                                                            <td>{{$item->pivot->MRP}}</td>
-                                                            <td>{{$item->pivot->addedQuantity}}</td>
-                                                            <td>{{$item->pivot->GST.'%'}}</td>
-                                                            <td>{{$withGST}}</td>
-                                                            <td>{{substr($data->created_at,0,10)}}</td>
-                                                            <td>{{$subTotal}}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                @endif
-                                            @endisset
+                                            @if ($data->dealer_id == $product->dealer_id)
+                                                @foreach ($data->product as $item)
+                                                    <tr class="text-center">
+                                                        @php
+                                                            $withGST=($item->pivot->rate + (($item->pivot->rate*$item->pivot->GST)/100));
+                                                            $subTotal=$withGST*$item->pivot->returnQuantity;
+                                                            $sum=$sum+$subTotal;
+                                                        @endphp
+                                                        <td>{{$j++}}</td>
+                                                        <td>{{$productName}}</td>
+                                                        <td>{{$item->pivot->rate}}</td>
+                                                        <td>{{$item->pivot->MRP}}</td>
+                                                        <td>{{$item->pivot->returnQuantity}}</td>
+                                                        <td>{{$item->pivot->GST.'%'}}</td>
+                                                        <td>{{$withGST}}</td>
+                                                        <td>{{$item->pivot->expiry_date}}</td>
+                                                        <td>{{substr($product->created_at,0,10)}}</td>
+                                                        <td>{{$subTotal}}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         @endforeach
                                         <tr>
                                             <td colspan="11"><b style="margin: 0 auto 0 0">Total Amt.: {{number_format($sum)."/-"}}</b></td>
@@ -178,7 +178,8 @@
                                 <th>MRP</th>
                                 <th>GST</th>
                                 <th>With GST</th>
-                                <th>Pur.Date</th>
+                                <th>EXP</th>
+                                <th>Exp.Date</th>
                                 <th>Total</th>
                             </tr>
                             @php
@@ -189,23 +190,24 @@
                                 @unless($prod->dealer)
                                     @foreach ($prod->product as $item)
                                         @php
-                                            $withGST=($item->pivot->purchase_rate + (($item->pivot->purchase_rate * $item->pivot->GST)/100));
-                                            $total=$withGST*$item->pivot->addedQuantity;
+                                            $withGST=($item->pivot->rate + (($item->pivot->rate * $item->pivot->GST)/100));
+                                            $total=$withGST*$item->pivot->returnQuantity;
                                             $sum=$sum+$total;
                                         @endphp
                                         <tr class="text-center">
                                             <td>{{$j++}}</td>
                                             <td>{{$item->product_name}}</td>
-                                            <td>{{$item->pivot->addedQuantity}}</td>
-                                            <td>{{$item->pivot->purchase_rate}}</td>
+                                            <td>{{$item->pivot->returnQuantity}}</td>
+                                            <td>{{$item->pivot->rate}}</td>
                                             <td>{{$item->pivot->MRP}}</td>
                                             <td>{{$item->pivot->GST.'%'}}</td>
                                             <td>{{$withGST}}</td>
+                                            <td>{{$item->pivot->expiry_date}}</td>
                                             <td>{{substr($prod->created_at,0,10)}}</td>
                                             <td>{{$total}}</td>
                                         </tr>
                                     @endforeach
-                                @endisset
+                                @endunless
                             @endforeach
                             <tr>
                                 <td colspan="11"><b>Total Amt.: {{number_format($sum).'/-'}}</b></td>

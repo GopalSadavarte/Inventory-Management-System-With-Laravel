@@ -53,7 +53,7 @@
                 <td>{{$product->MRP}}</td>
                 <td>{{$product->discount}}</td>
                 <td>{{$product->GST}}</td>
-                 <td class="d-none">{{$product->GSTOn}}</td>
+                <td class="d-none">{{$product->GSTOn}}</td>
             </tr>
             @endforeach
             <tr class="text-center">

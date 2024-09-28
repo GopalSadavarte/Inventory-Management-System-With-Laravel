@@ -124,7 +124,7 @@ class ExpiryController extends Controller implements ExpiryInterface
 
         $created = Expiry::select('created_at')->where('expiry_entry_id', $id)->whereRaw('DATE(`created_at`)=?', $date)->get();
         $del = Expiry::where('expiry_entry_id', $id)->whereRaw('DATE(`created_at`)=?', $date)->delete();
-        ExpiryController::recoverOldExp($del);
+        $this->recoverOldExp($del);
         Expiry::when($del, function () use ($request, $id, $dealer, $created) {
             $expId = Expiry::insertGetId([
                 "expiry_entry_id" => $id,
@@ -165,14 +165,19 @@ class ExpiryController extends Controller implements ExpiryInterface
     public function destroy(string $id, string $date)
     {
         $del = Expiry::where('expiry_entry_id', $id)->whereRaw('DATE(`created_at`)=?', $date)->delete();
-        ExpiryController::recoverOldExp($del);
+        $this->recoverOldExp($del);
         return redirect()->route('expiry.index');
     }
-    protected function printExpReport()
-    {
-        //
-    }
 
+    protected function getInfo()
+    {
+        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $start = $date->modify('-10 days')->format('Y-m-d');
+        $product = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`) BETWEEN ? AND ?', [$start, date('Y-m-d')])->get();
+        $fromFile = File::get(public_path('json/expiry.json'));
+        $merge = $this->merge($product, $fromFile);
+        return Json::decode($merge, false);
+    }
     public function weeklyReport()
     {
         $products = Inventory::getFromInventory()->get();
@@ -193,12 +198,56 @@ class ExpiryController extends Controller implements ExpiryInterface
 
     public function returnExpReport()
     {
-        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $start = $date->modify('-10 days')->format('Y-m-d');
-        $product = Expiry::withProductAndDealer()->whereRaw('DATE(`created_at`) BETWEEN ? AND ?', [$start, date('Y-m-d')])->get();
-        $fromFile = File::get(public_path('json/expiry.json'));
-        $products = ($fromFile == '') ? $product : Json::decode(Json::encode(array_merge(Json::decode($fromFile), Json::decode($product))), false);
-
+        $products = $this->getInfo();
         return view('Reports.expiry.returnExpReport', compact('products'));
+    }
+    public function printWeekly()
+    {
+        $merge = $this->getInfo();
+        return $this->makePdf($merge, 'Reports.pdf.weeklyExpiryPrint', 'weeklyExpiry', 'Weekly Expiry Report');
+    }
+
+    public function printMonthly()
+    {
+        $merge = $this->getInfo();
+        return $this->makePdf($merge, 'Reports.pdf.monthlyExpiryPrint', 'monthlyExpiry', 'Monthly Expiry Report');
+
+    }
+
+    public function printYearly()
+    {
+        $merge = $this->getInfo();
+        return $this->makePdf($merge, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+
+    }
+    public function printExpReport()
+    {
+        $products = $this->getInfo();
+        return $this->makePdf($products, 'Reports.pdf.expiryReportPrint', 'expiryReturnReport', 'Expiry Return Report');
+    }
+    public function printWeeklyByDates(string $from = null, string $to = null)
+    {
+        $merge = $this->getInfo();
+        $products = $this->filter($merge, $from, $to);
+        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+
+    }
+    public function printMonthlyByDates(string $from = null, string $to = null)
+    {
+        $merge = $this->getInfo();
+        $products = $this->filter($merge, $from, $to);
+        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+    }
+    public function printYearlyByDates(string $from = null, string $to = null)
+    {
+        $merge = $this->getInfo();
+        $products = $this->filter($merge, $from, $to);
+        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+    }
+    public function printExpReportByDates(string $from = null, string $to = null)
+    {
+        $merge = $this->getInfo();
+        $products = $this->filter($merge, $from, $to);
+        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
     }
 }

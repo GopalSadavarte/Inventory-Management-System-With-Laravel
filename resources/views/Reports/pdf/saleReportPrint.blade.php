@@ -55,51 +55,121 @@
             <div class="product-info">
                 <div class="info">
                     <div class="sale-data">
-                @php
-                    $months=[];$count=0;
-                @endphp
-                @foreach ($bills as $item)
-                    @php
-                        $date=preg_split('/[\-]/',substr($item->created_at,0,7));
-                        $monthWise=$date[1].'-'.$date[0];
-                    @endphp
-                    @if (!in_array($monthWise,$months))
                         @php
-                            array_push($months,$monthWise)
+                            $months=[];$count=0;
                         @endphp
-                        <div class="contant">
-                            <div class="heading">
-                                <h4 class="heading text-dark col-2 my-auto">{{$monthWise}}</h4>
-                            </div>
-                            <hr class="col-6">
-                            <div class="table-container">
-                                <table class="table table-striped table-bordered">
-                                    <tr class="table-row">
-                                        <th>Sr.No.</th>
-                                        <th>Customer Name</th>
-                                        <th>Email</th>
-                                        <th>Contact</th>
-                                        <th>Pending Amt.</th>
-                                    </tr>
-                                    @php
-                                        $cust=[];$i=1;
-                                    @endphp
-                                    @foreach ($bills as $eachProd)
-                                        @isset($eachProd->bill_customer->id)
-                                            @if (!in_array($eachProd->bill_customer->id,$cust))
-                                                @php
-                                                    array_push($cust,$eachProd->bill_customer->id)
-                                                @endphp
-                                                <tr>
-                                                    <td>{{$i++}}</td>
-                                                    <td>{{$eachProd->bill_customer->customer_name}}</td>
-                                                    <td>{{$eachProd->bill_customer->customer_email}}</td>
-                                                    <td>{{$eachProd->bill_customer->contact}}</td>
-                                                    <td>{{$eachProd->bill_customer->pending_amt}}</td>
-                                                </tr>
-                                                <br>
-                                                <tr>
-                                                    <td colspan="6" class="bill-info">
+                        @foreach ($bills as $item)
+                            @php
+                                $date=preg_split('/[\-]/',substr($item->created_at,0,7));
+                                $monthWise=$date[1].'-'.$date[0];
+                            @endphp
+                            @if (!in_array($monthWise,$months))
+                                @php
+                                    array_push($months,$monthWise)
+                                @endphp
+                                <div class="contant">
+                                    <div class="heading">
+                                        <h4 class="heading text-dark col-2 my-auto">{{$monthWise}}</h4>
+                                    </div>
+                                    <hr class="col-6">
+                                    <div class="table-container">
+                                        <table class="table table-striped table-bordered">
+                                            <tr class="table-row">
+                                                <th>Sr.No.</th>
+                                                <th>Customer Name</th>
+                                                <th>Email</th>
+                                                <th>Contact</th>
+                                                <th>Pending Amt.</th>
+                                            </tr>
+                                            @php
+                                                $cust=[];$i=1;
+                                            @endphp
+                                            @foreach ($bills as $eachProd)
+                                                @isset($eachProd->bill_customer->id)
+                                                    @if (!in_array($eachProd->bill_customer->id,$cust))
+                                                        @php
+                                                            array_push($cust,$eachProd->bill_customer->id)
+                                                        @endphp
+                                                        <tr>
+                                                            <td>{{$i++}}</td>
+                                                            <td>{{$eachProd->bill_customer->customer_name}}</td>
+                                                            <td>{{$eachProd->bill_customer->customer_email}}</td>
+                                                            <td>{{$eachProd->bill_customer->contact}}</td>
+                                                            <td>{{$eachProd->bill_customer->pending_amt}}</td>
+                                                        </tr>
+                                                        <br>
+                                                        <tr>
+                                                            <td colspan="6" class="bill-info">
+                                                                <table class="table table-striped table-bordered">
+                                                                    <tr class="table-row">
+                                                                        <th>Sr.No.</th>
+                                                                        <th>Product Id</th>
+                                                                        <th>Product Name</th>
+                                                                        <th>Qty.</th>
+                                                                        <th>MRP</th>
+                                                                        <th>Rate</th>
+                                                                        <th>Discount</th>
+                                                                        <th>Net Amt.</th>
+                                                                        <th>Total</th>
+                                                                        <th>Bill No.</th>
+                                                                        <th>Sale Date</th>
+                                                                    </tr>
+                                                                    @php
+                                                                        $j=1;
+                                                                    @endphp
+                                                                    @foreach ($bills as $data)
+                                                                        @php
+                                                                            $date=preg_split('/[\-]/',substr($data->created_at,0,7));
+                                                                            $dateWithMonthYear=$date[1].'-'.$date[0];
+                                                                        @endphp
+                                                                        @isset($data->bill_customer->id)
+                                                                            @if ($dateWithMonthYear == $monthWise && $data->bill_customer->id == $eachProd->bill_customer->id)
+                                                                                @foreach ($data->bill_product as $product)
+                                                                                    @php
+                                                                                        $rate=$product->pivot->newRate;
+                                                                                        $disc=$product->pivot->newDiscount;
+                                                                                        $qty=$product->pivot->newQuantity;
+
+                                                                                        $netPrice = ($rate - (($rate*$disc)/100));
+                                                                                        $total=$netPrice * $qty;
+                                                                                    @endphp
+                                                                                    <tr>
+                                                                                        <td>{{$j++}}</td>
+                                                                                        <td>{{$product->product_id}}</td>
+                                                                                        <td>{{$product->product_name}}</td>
+                                                                                        <td>{{$qty}}</td>
+                                                                                        <td>{{$product->pivot->newMRP}}</td>
+                                                                                        <td>{{$rate}}</td>
+                                                                                        <td>{{$disc}}</td>
+                                                                                        <td>{{$netPrice}}</td>
+                                                                                        <td>{{$total}}</td>
+                                                                                        <td class="bill-number">{{$data->dayWiseBillNumber}}</td>
+                                                                                        <td class="bill-date">{{substr($data->created_at,0,10)}}</td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            @endif
+                                                                        @endisset
+                                                                    @endforeach
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                    @else
+                                                        @php
+                                                            $count++;
+                                                        @endphp
+                                                @endisset
+                                            @endforeach
+                                        </table>
+                                        @if($count>0)
+                                            <div class="other-customers">
+                                                <div class="content">
+                                                    <div class="heading">
+                                                        <h4 class="heading text-uppercase text-success">
+                                                            <u>Other Customer's</u>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="bill-info">
                                                         <table class="table table-striped table-bordered">
                                                             <tr class="table-row">
                                                                 <th>Sr.No.</th>
@@ -115,115 +185,45 @@
                                                                 <th>Sale Date</th>
                                                             </tr>
                                                             @php
-                                                                $j=1;
+                                                                $k=1;
                                                             @endphp
-                                                            @foreach ($bills as $data)
-                                                                @php
-                                                                    $date=preg_split('/[\-]/',substr($data->created_at,0,7));
-                                                                    $dateWithMonthYear=$date[1].'-'.$date[0];
-                                                                @endphp
-                                                                @isset($data->bill_customer->id)
-                                                                    @if ($dateWithMonthYear == $monthWise && $data->bill_customer->id == $eachProd->bill_customer->id)
-                                                                        @foreach ($data->bill_product as $product)
-                                                                            @php
-                                                                                $rate=$product->pivot->newRate;
-                                                                                $disc=$product->pivot->newDiscount;
-                                                                                $qty=$product->pivot->newQuantity;
+                                                            @foreach ($bills as $item)
+                                                                @if ($item->bill_customer == null && empty($item->bill_customer))
+                                                                    @foreach ($item->bill_product as $prod)
+                                                                        @php
+                                                                            $qty=$prod->pivot->newQuantity;
+                                                                            $rate=$prod->pivot->newRate;
+                                                                            $disc=$prod->pivot->newDiscount;
 
-                                                                                $netPrice = ($rate - (($rate*$disc)/100));
-                                                                                $total=$netPrice * $qty;
-                                                                            @endphp
-                                                                            <tr>
-                                                                                <td>{{$j++}}</td>
-                                                                                <td>{{$product->product_id}}</td>
-                                                                                <td>{{$product->product_name}}</td>
-                                                                                <td>{{$qty}}</td>
-                                                                                <td>{{$product->pivot->newMRP}}</td>
-                                                                                <td>{{$rate}}</td>
-                                                                                <td>{{$disc}}</td>
-                                                                                <td>{{$netPrice}}</td>
-                                                                                <td>{{$total}}</td>
-                                                                                <td class="bill-number">{{$data->dayWiseBillNumber}}</td>
-                                                                                <td class="bill-date">{{substr($data->created_at,0,10)}}</td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    @endif
-                                                                @endisset
+                                                                            $netPrice=($rate - (($rate * $disc)/100));
+                                                                            $total=$netPrice*$qty;
+                                                                        @endphp
+                                                                        <tr>
+                                                                            <td>{{$k++}}</td>
+                                                                            <td>{{$prod->product_id}}</td>
+                                                                            <td>{{$prod->product_name}}</td>
+                                                                            <td>{{$qty}}</td>
+                                                                            <td>{{$prod->pivot->newMRP}}</td>
+                                                                            <td>{{$rate}}</td>
+                                                                            <td>{{$disc}}</td>
+                                                                            <td>{{$netPrice}}</td>
+                                                                            <td>{{$total}}</td>
+                                                                            <td class="bill-number">{{$item->dayWiseBillNumber}}</td>
+                                                                            <td class="bill-date">{{substr($item->created_at,0,10)}}</td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @endif
                                                             @endforeach
                                                         </table>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                            @else
-                                                @php
-                                                    $count++;
-                                                @endphp
-                                        @endisset
-                                    @endforeach
-                                </table>
-                                @if($count>0)
-                                    <div class="other-customers">
-                                    <div class="content">
-                                        <div class="heading">
-                                            <h4 class="heading text-uppercase text-success">
-                                                <u>Other Customer's</u>
-                                            </h4>
-                                        </div>
-                                        <div class="bill-info">
-                                            <table class="table table-striped table-bordered">
-                                                <tr class="table-row">
-                                                    <th>Sr.No.</th>
-                                                    <th>Product Id</th>
-                                                    <th>Product Name</th>
-                                                    <th>Qty.</th>
-                                                    <th>MRP</th>
-                                                    <th>Rate</th>
-                                                    <th>Discount</th>
-                                                    <th>Net Amt.</th>
-                                                    <th>Total</th>
-                                                    <th>Bill No.</th>
-                                                    <th>Sale Date</th>
-                                                </tr>
-                                                @php
-                                                    $k=1;
-                                                @endphp
-                                                @foreach ($bills as $item)
-                                                    @if ($item->bill_customer == null && empty($item->bill_customer))
-                                                        @foreach ($item->bill_product as $prod)
-                                                            @php
-                                                                $qty=$prod->pivot->newQuantity;
-                                                                $rate=$prod->pivot->newRate;
-                                                                $disc=$prod->pivot->newDiscount;
-
-                                                                $netPrice=($rate - (($rate * $disc)/100));
-                                                                $total=$netPrice*$qty;
-                                                            @endphp
-                                                            <tr>
-                                                                <td>{{$k++}}</td>
-                                                                <td>{{$prod->product_id}}</td>
-                                                                <td>{{$prod->product_name}}</td>
-                                                                <td>{{$qty}}</td>
-                                                                <td>{{$prod->pivot->newMRP}}</td>
-                                                                <td>{{$rate}}</td>
-                                                                <td>{{$disc}}</td>
-                                                                <td>{{$netPrice}}</td>
-                                                                <td>{{$total}}</td>
-                                                                <td class="bill-number">{{$item->dayWiseBillNumber}}</td>
-                                                                <td class="bill-date">{{substr($item->created_at,0,10)}}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @endif
-                                                @endforeach
-                                            </table>
-                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>

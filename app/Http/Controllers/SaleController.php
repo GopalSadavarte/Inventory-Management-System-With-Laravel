@@ -13,10 +13,10 @@ class SaleController extends Controller
 {
     public function getSaleReport()
     {
-        $d = SaleController::getDataFromFile();
+        $d = $this->getDataFromFile();
         $fileInfo = $d[0];
         $bills = $d[1];
-        $bills = SaleController::verifyingData($fileInfo, $bills);
+        $bills = $this->verifyingData($fileInfo, $bills);
         if ($bills != null) {
             $bills = Json::encode($bills);
             $bills = Json::decode($bills, false);
@@ -26,29 +26,29 @@ class SaleController extends Controller
     }
     public function printSaleReportByDate(string $from, string $to)
     {
-        $d = SaleController::getDataFromFileByDates($from, $to);
+        $d = $this->getDataFromFileByDates($from, $to);
         $fileInfo = $d[0];
         $bills = $d[1];
-        $bills = SaleController::verifyingData($fileInfo, $bills);
+        $bills = $this->verifyingData($fileInfo, $bills);
         if ($bills != null) {
             $bills = Json::encode($bills);
             $bills = Json::decode($bills, false);
         }
         // return $bills;
-        return SaleController::downloadPdf($bills);
+        return $this->downloadPdf($bills);
     }
     public function printSaleReport()
     {
-        $d = SaleController::getDataFromFile();
+        $d = $this->getDataFromFile();
         $fileInfo = $d[0];
         $bills = $d[1];
-        $bills = SaleController::verifyingData($fileInfo, $bills);
+        $bills = $this->verifyingData($fileInfo, $bills);
         if ($bills != null) {
             $data = Json::encode($bills);
             $billInfo = Json::decode($data, false);
         }
         // return $billInfo;
-        return SaleController::downloadPdf($billInfo);
+        return $this->downloadPdf($billInfo);
     }
 
     protected function verifyingData(mixed $fromJson, mixed $fromDatabase)

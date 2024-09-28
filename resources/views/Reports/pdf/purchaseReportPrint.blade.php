@@ -161,7 +161,7 @@
                                             @endif
                                         @endforeach
                                         <tr>
-                                            <td colspan="11"><b style="margin: 0 auto 0 0">Total Amt.: {{$sum."/-"}}</b></td>
+                                            <td colspan="11"><b style="margin: 0 auto 0 0">Total Amt.: {{number_format($sum)."/-"}}</b></td>
                                         </tr>
                                     </table>
                                     <hr>
@@ -222,7 +222,7 @@
                                 @endisset
                             @endforeach
                             <tr>
-                                <td colspan="11"><b>Total Amt.: {{$sum.'/-'}}</b></td>
+                                <td colspan="11"><b>Total Amt.: {{number_format($sum).'/-'}}</b></td>
                             </tr>
                         </table>
                     </div>

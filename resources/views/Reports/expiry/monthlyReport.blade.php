@@ -36,14 +36,15 @@
             <hr />
         </div>
         <div class="content">
-            @if ($products->count()>0)
+            @if (count($products) > 0)
                 <div class="product-info">
                     @php
-                        $arr=[];$i=1;
+                        $arr=[];$i=1;$count=0;
                     @endphp
                     @foreach ($products as $product)
                         @isset($product->EXP)
                             @php
+                                $count=$count+1;
                                 $month=substr($product->EXP,0,7);
                             @endphp
                             @if (!in_array($month,$arr))
@@ -125,12 +126,14 @@
                         @endisset
                     @endforeach
                 </div>
-                <div class="buttons w-50 d-flex text-center">
-                    <div class="mx-auto my-3 d-flex">
-                        <a href="#" class="btn btn-primary col-5">Print</a>
-                        <a href="{{route('expiry.index')}}" class="btn btn-success col-10 mx-1">Go to Expiry</a>
+                @if ($count > 0)
+                    <div class="buttons w-50 d-flex text-center">
+                        <div class="mx-auto my-3 d-flex">
+                            <a href="#" class="btn btn-primary col-5">Print</a>
+                            <a href="{{route('expiry.index')}}" class="btn btn-success col-10 mx-1">Go to Expiry</a>
+                        </div>
                     </div>
-                </div>
+                @endif
             @else
                 <div class="not-found">
                     <h3 class="heading text-center text-dark">

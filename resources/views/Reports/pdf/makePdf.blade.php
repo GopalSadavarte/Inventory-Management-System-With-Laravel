@@ -97,7 +97,7 @@
                         <b class="fs-5">Total Qty:</b>
                         <span class="fs-5 mx-2">{{ $sum }}</span>
                         <span class="fs-5" style="margin-left: 5rem">{{
-                            'Rs. '.$total
+                            'Rs. '.number_format($total)."/-"
                         }}</span>
                     </div>
                 </div>
@@ -105,11 +105,11 @@
                 <div
                     class="bill-amount border w-50 rounded my-0 mx-auto p-2 fs-4"
                 >
-                    <b>Bill Amount : {{ "Rs. ".$total }}</b>
+                    <b>Bill Amount : {{ "Rs. ".number_format($total)."/-" }}</b>
                 </div>
                 <div class="amount-description">
-                    <b>Paid Amount:</b><span>{{ $paid }}</span>
-                    <b>Returned Amount:</b><span>{{ $return }}</span>
+                    <b>Paid Amount:</b><span>{{ number_format($paid) }}</span>
+                    <b>Returned Amount:</b><span>{{ number_format($return) }}</span>
                 </div>
                 <div class="discount border rounded w-50 my-0 mx-auto p-2 fs-5">
                     <span
@@ -118,7 +118,7 @@
                             ><u><b>Discount : </b></u></span
                         >
                     </span>
-                    <span>{{ $discount }}</span>
+                    <span>{{number_format($discount)}}</span>
                 </div>
                 <hr />
                 <div class="fs-4 row col-12 text-center">

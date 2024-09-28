@@ -10,7 +10,6 @@ use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Stock;
-use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Casts\Json;
@@ -33,6 +32,7 @@ interface StockInterface
     public function printExpiredStock();
     public function getProductStockEntryByDealer();
     public function printProductStockEntryReport();
+    public function printStockByDates(string $from, string $to);
 }
 
 class StockController extends Controller implements StockInterface
@@ -262,53 +262,45 @@ class StockController extends Controller implements StockInterface
 
     public function printAvailableStock()
     {
-        $products = StockController::getAvailableStock('get');
-        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Available Stock Report');
+        $products = $this->getAvailableStock('get');
+        return $this->makePdf($products, 'Reports/pdf/stockReport', 'getAvailable', 'Available Stock Report');
     }
     public function printRequiredStock()
     {
-        $products = StockController::getRequiredStock('get');
-        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Required Stock Report');
+        $products = $this->getRequiredStock('get');
+        return $this->makePdf($products, 'Reports/pdf/stockReport', 'getRequired', 'Required Stock Report');
     }
     public function printExpiredStock()
     {
-        $products = StockController::getExpired('get');
-        return StockController::makePdf($products, 'Reports/pdf/stockReport', 'Expired Stock Report');
+        $products = $this->getExpired('get');
+        return $this->makePdf($products, 'Reports/pdf/stockReport', 'getExpired', 'Expired Stock Report');
     }
-
-    public function getProductStockEntryByDealer()
+    protected function getInfo()
     {
         $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
         $date = $date->modify('-10 day')->format('Y-m-d');
         $products = File::get(public_path('./json/stock.json'));
         $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
-        $products = ($products == '') ? Json::decode($stocks, false) : Json::decode(array_merge(Json::decode($products), Json::decode($stocks)), false);
+        return $this->merge($stocks, $products);
+    }
+    public function getProductStockEntryByDealer()
+    {
+        $products = $this->getInfo();
         return View::make('Reports.stock.stockEntryReport', compact('products'));
     }
 
     public function printProductStockEntryReport()
     {
-        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $date = $date->modify('-10 day')->format('Y-m-d');
-        $products = File::get(public_path('./json/stock.json'));
-        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
-        $products = ($products == '') ? Json::decode($stocks, false) : Json::decode(array_merge(Json::decode($products), Json::decode($stocks)), false);
-        return StockController::makePdf($products, 'Reports/pdf/stockReportByDealer');
+        $products = $this->getInfo();
+        return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Entry Report');
     }
 
-    public function printStockReportByDates(string $from, string $to)
+    public function printStockByDates(string $from, string $to)
     {
-        $products = Stock::withProductAndDealer()->get();
-        return StockController::makePdf($products, 'Reports/pdf/stockReportByDealer');
-    }
-
-    private function makePdf(object | array $products, string $view, string $report = null)
-    {
-        return Pdf::loadView($view, compact('products', 'report'), [
-            'css' => [
-                File::get(public_path('css/style.css')),
-                File::get(public_path('css/bootstrap.css')),
-            ],
-        ])->setPaper('A4', 'landscape')->download();
+        $products = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$from, $to])->get();
+        $fileInfo = File::get(public_path('/json/stock.json'));
+        $fileInfo = $this->filter($fileInfo, $from, $to);
+        $products = $this->merge($products, $fileInfo);
+        return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Report');
     }
 }
