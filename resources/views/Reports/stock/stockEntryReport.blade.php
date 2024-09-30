@@ -128,33 +128,21 @@ Stock Report
                             </div>
                         </div>
                     @endif
-                    <div class="container d-none" id="notFoundText">
-                        <div class="heading">
-                            <h1 class="heading fs-3 text-center">
-                                Not Found!
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
-                        <div class="w-25 mx-auto d-flex">
-                            <a href="{{route('stock.print')}}"  id="printButton" class="btn btn-primary w-50">
-                                Print
-                            </a>
+                        <x-report-not-found className='container d-none w-100 text-center my-2' id="notFoundText"/>
+                        <x-report-button
+                            className='bg-light g-2 text-center mx-auto my-0'
+                            printRoute='stock.print'
+                            goToRoute='stock.index'
+                            goto='Back'
+                            idForPrintRoute='printButton'
+                        >
                             <a href="{{route('stock.printByDate')}}" id="printByDateButton" class="btn btn-primary w-50 d-none">
                                 Print
                             </a>
-                            <a href="{{route('stock.index')}}" class="btn btn-success mx-2 w-50">
-                                Back
-                            </a>
-                        </div>
-                    </div>
+                        </x-report-button>
                 </div>
             @else
-                <div class="reports my-2">
-                    <h4 class="heading text-center text-dark">
-                        No Data Found!
-                    </h4>
-                </div>
+                <x-report-not-found className='container  my-2'/>
             @endif
         </div>
     </div>

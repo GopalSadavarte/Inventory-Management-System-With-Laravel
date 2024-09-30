@@ -70,24 +70,17 @@
                                 </div>
                             @endif
                         @endforeach
-                        <div class="d-none w-100 text-center">
-                            <h3 class="heading text-center text-dark my-3" id="notFoundText">
-                                <u>No Data Found!</u>
-                            </h3>
-                        </div>
-                        <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
-                            <div class="w-25 mx-auto d-flex">
-                                <a href="{{route('expiredStockPrint')}}" id="printButton" class="btn btn-primary w-50">Print</a>
-                                <a href="{{route('stock.index')}}" class="btn btn-success mx-2 w-50">Back</a>
-                            </div>
-                        </div>
+                        <x-report-not-found className='container d-none w-100 text-center my-2' id="notFoundText"/>
+                        <x-report-button
+                            className='bg-light g-2 w-100 text-center mx-auto my-0'
+                            printRoute='expiredStockPrint'
+                            goToRoute='stock.index'
+                            goto='Back'
+                            idForPrintRoute='printButton'
+                        />
                     </div>
                 @else
-                    <div class="reports my-2">
-                        <h4 class="heading text-center text-dark">
-                            No Data Found!
-                        </h4>
-                    </div>
+                    <x-report-not-found className='reports my-2'/>
                 @endif
             </div>
         </div>

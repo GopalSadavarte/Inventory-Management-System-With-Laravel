@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+date_default_timezone_set('Asia/Kolkata');
 use App\Models\Group;
 use App\Models\SubGroup;
 use Exception;
@@ -22,7 +22,7 @@ interface GroupInterface
 class GroupController extends Controller implements GroupInterface
 {
     /**
-     * Display a listing of the resource.
+     * This method get last group and sub-group number and send it to the view.
      */
     public function index()
     {
@@ -36,7 +36,7 @@ class GroupController extends Controller implements GroupInterface
     }
 
     /**
-     * Store a newly created resource in storage.
+     * This function validate and store the group information into the DB.
      */
     public function store(Request $request)
     {
@@ -57,7 +57,7 @@ class GroupController extends Controller implements GroupInterface
     }
 
     /**
-     * Display the specified resource.
+     * Method show are send the group info as per request
      */
     public function show(string $id)
     {
@@ -70,7 +70,7 @@ class GroupController extends Controller implements GroupInterface
     }
 
     /**
-     * Update the specified resource in storage.
+     * This method update the specific group data into DB.
      */
     public function update(Request $request, string $id)
     {
@@ -90,7 +90,7 @@ class GroupController extends Controller implements GroupInterface
     }
 
     /**
-     * Remove the specified resource from storage.
+     * This method remove the specific group from DB
      */
     public function destroy(string $id)
     {
@@ -103,6 +103,9 @@ class GroupController extends Controller implements GroupInterface
         return redirect()->route('group.index')->with('group_delete', $msg);
     }
 
+    /**
+     * This method return sub-group info for the purpose of update or delete
+     */
     public function getSubGroup(string $id)
     {
         $subGroup = SubGroup::with('group')->where('sub_group_id', $id)->get();
@@ -113,6 +116,9 @@ class GroupController extends Controller implements GroupInterface
         return response()->json($data);
     }
 
+    /**
+     * This method validate and store the specified store request.
+     */
     public function newSubGroup(Request $request)
     {
         $request->validate([
@@ -133,6 +139,9 @@ class GroupController extends Controller implements GroupInterface
         return redirect()->route('group.index')->with('sub_group_success', $msg);
     }
 
+    /**
+     * This method updates the specified sub-group info into the database
+     */
     public function updateSubGroup(Request $request, string $id)
     {
         $request->validate([
@@ -153,6 +162,9 @@ class GroupController extends Controller implements GroupInterface
         return redirect()->route('group.index')->with('sub_group_update', $msg);
     }
 
+    /**
+     *This method are remove the specified sub-group from the DB.
+     */
     public function deleteSubGroup(string $id)
     {
         try {

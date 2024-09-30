@@ -228,7 +228,6 @@ class StockController extends Controller implements StockInterface
         if ($data != null) {
             return $products;
         }
-        // return $products;
         return view('Reports.stock.availableStock', compact('products'));
     }
 
@@ -260,6 +259,24 @@ class StockController extends Controller implements StockInterface
         return view('Reports.stock.expiredStock', compact('products'));
     }
 
+    protected function getInfo()
+    {
+        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $date = $date->modify('-10 day')->format('Y-m-d');
+        $products = File::get(public_path('./json/stock.json'));
+        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
+        $info = $this->merge($stocks, $products);
+        return Json::decode($info, false);
+    }
+    public function printStockByDates(string $from, string $to)
+    {
+        $products = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$from, $to])->get();
+        $fileInfo = File::get(public_path('/json/stock.json'));
+        $fileInfo = $this->filter($fileInfo, $from, $to);
+        $products = $this->merge($products, $fileInfo);
+        $products = Json::decode($products, false);
+        return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Report');
+    }
     public function printAvailableStock()
     {
         $products = $this->getAvailableStock('get');
@@ -275,14 +292,7 @@ class StockController extends Controller implements StockInterface
         $products = $this->getExpired('get');
         return $this->makePdf($products, 'Reports/pdf/stockReport', 'getExpired', 'Expired Stock Report');
     }
-    protected function getInfo()
-    {
-        $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $date = $date->modify('-10 day')->format('Y-m-d');
-        $products = File::get(public_path('./json/stock.json'));
-        $stocks = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$date, date('Y-m-d')])->get();
-        return $this->merge($stocks, $products);
-    }
+
     public function getProductStockEntryByDealer()
     {
         $products = $this->getInfo();
@@ -293,14 +303,5 @@ class StockController extends Controller implements StockInterface
     {
         $products = $this->getInfo();
         return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Entry Report');
-    }
-
-    public function printStockByDates(string $from, string $to)
-    {
-        $products = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$from, $to])->get();
-        $fileInfo = File::get(public_path('/json/stock.json'));
-        $fileInfo = $this->filter($fileInfo, $from, $to);
-        $products = $this->merge($products, $fileInfo);
-        return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Report');
     }
 }

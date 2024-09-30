@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+date_default_timezone_set('Asia/Kolkata');
 use App\Http\Requests\ProductRequest;
 use App\Models\Group;
 use App\Models\Product;
@@ -19,7 +19,7 @@ interface ProductInterface
 class ProductController extends Controller implements ProductInterface
 {
     /**
-     * Display a listing of the resource.
+     * This method return the view of the product page for the product CRUD.
      */
     public function index()
     {
@@ -27,6 +27,7 @@ class ProductController extends Controller implements ProductInterface
         $groups = Group::all();
         $sub_groups = SubGroup::all();
         $last = Product::select('product_id')->orderBy('id', 'DESC')->limit(1)->get();
+        //This creates the unique id to each product.
         if ($last->count() >= 1) {
             $lastProductId = substr($last[0]->product_id, 2);
             $productId = "MR" . (intval($lastProductId) + 1);
@@ -36,7 +37,7 @@ class ProductController extends Controller implements ProductInterface
         return view('addNewProduct', compact('products', 'groups', 'sub_groups', 'productId'));
     }
     /**
-     * Store a newly created resource in storage.
+     * This method validate (using self define request 'ProductRequest') and  stores the product info
      */
     public function store(ProductRequest $request)
     {
@@ -59,7 +60,7 @@ class ProductController extends Controller implements ProductInterface
     }
 
     /**
-     * Display the specified resource.
+     * This method shows the specific product according to the product id.
      */
     public function show(string $id)
     {
@@ -69,7 +70,7 @@ class ProductController extends Controller implements ProductInterface
         ]);
     }
     /**
-     * Update the specified resource in storage.
+     * This method updates the specified product data into DB.
      */
     public function update(ProductRequest $request, string $id)
     {
@@ -92,7 +93,7 @@ class ProductController extends Controller implements ProductInterface
     }
 
     /**
-     * Remove the specified resource from storage.
+     * This method remove the specified product into from DB.
      */
     public function destroy(string $id)
     {

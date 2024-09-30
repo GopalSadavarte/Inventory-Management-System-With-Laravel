@@ -39,12 +39,13 @@
             @if ($products->count()>0)
                 <div class="product-info">
                     @php
-                        $arr=[];$i=1;
+                        $arr=[];$i=1;$count=0;
                     @endphp
                     @foreach ($products as $product)
                         @isset($product->EXP)
                             @php
                                 $year=substr($product->EXP,0,4);
+                                $count++;
                             @endphp
                             @if (!in_array($year,$arr))
                                 @php
@@ -127,18 +128,13 @@
                         @endisset
                     @endforeach
                 </div>
-                <div class="buttons w-50 d-flex text-center">
-                    <div class="mx-auto my-3 d-flex">
-                        <a href="#" class="btn btn-primary col-5">Print</a>
-                        <a href="{{route('expiry.index')}}" class="btn btn-success col-10 mx-1">Go to Expiry</a>
-                    </div>
-                </div>
+                @if ($count > 0)
+                    <x-report-button className='w-50 d-flex text-center' goToRoute='expiry.index' printRoute='printYearlyExp' goto='Got to Expiry'/>
+                @else
+                    <x-report-not-found className='container'/>
+                @endif
             @else
-                <div class="not-found">
-                    <h3 class="heading text-center text-dark">
-                        No Data Found!
-                    </h3>
-                </div>
+                <x-report-not-found className="container"/>
             @endif
         </div>
     </div>

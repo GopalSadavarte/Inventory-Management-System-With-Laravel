@@ -15,11 +15,17 @@ use Illuminate\Support\Str;
 
 class JsonController extends Controller
 {
+
+    /**
+     * This method are get the data of Bill Entries,purchase entries,stock and expiry entries
+     * from DB and store it into the json files and remove it from the DB.
+     */
     public function storeToJson()
     {
         $d = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
         $d->modify('-10 day');
         $date = $d->format('Y-m-d');
+
         $billInfo = Bill::with('billProduct', 'billInventory', 'billCustomer')
             ->whereRaw('DATE(`created_at`)=?', $date)
             ->get();
@@ -62,6 +68,9 @@ class JsonController extends Controller
         return view('welcome');
     }
 
+    /**
+     * This function is merge the old file data and new Data and return after merge.
+     */
     protected function insertIntoFile(object | array $newData, string $fileName)
     {
         $string = Json::encode($newData);

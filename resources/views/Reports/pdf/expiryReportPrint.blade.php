@@ -1,3 +1,6 @@
+@php
+    date_default_timezone_set('Asia/Kolkata')
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>

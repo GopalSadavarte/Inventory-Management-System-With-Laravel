@@ -134,33 +134,22 @@
                             </div>
                         </div>
                     @endif
-                    <div class="container d-none" id="notFoundText">
-                        <div class="heading">
-                            <h1 class="heading fs-3 text-center">
-                                Not Found!
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="buttons bg-light g-2 w-100 text-center mx-auto my-0">
-                        <div class="w-25 mx-auto d-flex">
-                            <a href="{{route('printExpReturnReport')}}" id="printButton" class="btn btn-primary w-50">
-                                Print
-                            </a>
-                            <a href="{{route('printExpReturnReportByDates')}}" id="printByDateButton" class="btn btn-primary w-50 d-none">
-                                Print
-                            </a>
-                            <a href="{{route('expiry.index')}}" class="btn btn-success mx-2 w-50">
-                                Back
-                            </a>
-                        </div>
-                    </div>
+                    <x-report-not-found className="container d-none" id="notFoundText"/>
+
+                    <x-report-button
+                        className='container bg-light g-2 text-center mx-auto my-0'
+                        goToRoute='expiry.index'
+                        printRoute='printExpReturnReport'
+                        idForPrintRoute="printButton"
+                        goto='Go to Expiry'
+                    >
+                        <a href="{{route('printExpReturnReportByDates')}}" id="printByDateButton" class="btn btn-primary w-50 d-none">
+                            Print
+                        </a>
+                    </x-report-button>
                 </div>
             @else
-                <div class="reports my-2">
-                    <h4 class="heading text-center text-dark">
-                        No Data Found!
-                    </h4>
-                </div>
+                <x-report-not-found className='container reports my-2'/>
             @endif
         </div>
     </div>

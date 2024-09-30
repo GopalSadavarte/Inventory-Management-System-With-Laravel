@@ -127,19 +127,12 @@
                     @endforeach
                 </div>
                 @if ($count > 0)
-                    <div class="buttons w-50 d-flex text-center">
-                        <div class="mx-auto my-3 d-flex">
-                            <a href="#" class="btn btn-primary col-5">Print</a>
-                            <a href="{{route('expiry.index')}}" class="btn btn-success col-10 mx-1">Go to Expiry</a>
-                        </div>
-                    </div>
+                    <x-report-button goToRoute='monthlyExpiry' printRoute='printMonthlyExp' goto='Got to Expiry' className='w-50 d-flex text-center'/>
+                @else
+                    <x-report-not-found className="container"/>
                 @endif
             @else
-                <div class="not-found">
-                    <h3 class="heading text-center text-dark">
-                        No Data Found!
-                    </h3>
-                </div>
+                <x-report-not-found className="container"/>
             @endif
         </div>
     </div>

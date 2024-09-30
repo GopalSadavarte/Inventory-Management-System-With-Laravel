@@ -228,18 +228,15 @@
                         @endif
                     @endforeach
                 </div>
-                <div class="buttons w-50 mx-1 d-flex gx-2 bg-light">
-                    <div class="mx-auto">
-                        <a href="{{route('printSaleReport')}}" id="printBtn" class="btn btn-primary px-4">Print</a>
-                        <a href="{{route('bill.index')}}" class="btn btn-success mx-1">Go to Sale Bill</a>
-                    </div>
-                </div>
+                <x-report-button
+                    className='w-50 mx-1 d-flex gx-2 bg-light'
+                    printRoute='printSaleReport'
+                    goToRoute='bill.index'
+                    idForPrintRoute='printBtn'
+                    goto='Go to Sale Bill'
+                />
             @else
-                <div class="not-found">
-                    <h3 class="heading text-center text-dark">
-                        No Data Found!
-                    </h3>
-                </div>
+                <x-report-not-found className='container'/>
             @endif
         </div>
     </div>

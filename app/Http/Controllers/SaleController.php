@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+date_default_timezone_set('Asia/Kolkata');
 use App\Models\Bill;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
@@ -16,12 +17,13 @@ class SaleController extends Controller
         $d = $this->getDataFromFile();
         $fileInfo = $d[0];
         $bills = $d[1];
+
         $bills = $this->verifyingData($fileInfo, $bills);
         if ($bills != null) {
             $bills = Json::encode($bills);
             $bills = Json::decode($bills, false);
         }
-        // return $bills;
+
         return view('Reports.sale.saleReport', compact('bills'));
     }
     public function printSaleReportByDate(string $from, string $to)
@@ -34,7 +36,6 @@ class SaleController extends Controller
             $bills = Json::encode($bills);
             $bills = Json::decode($bills, false);
         }
-        // return $bills;
         return $this->downloadPdf($bills);
     }
     public function printSaleReport()
@@ -47,7 +48,6 @@ class SaleController extends Controller
             $data = Json::encode($bills);
             $billInfo = Json::decode($data, false);
         }
-        // return $billInfo;
         return $this->downloadPdf($billInfo);
     }
 

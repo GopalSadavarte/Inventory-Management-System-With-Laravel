@@ -39,11 +39,12 @@
             @if ($products->count()>0)
                 <div class="product-info">
                     @php
-                        $arr=[];$i=1;
+                        $arr=[];$i=1;$count=0;
                     @endphp
                     @foreach ($products as $product)
                         @isset($product->EXP)
                             @php
+                                $count++;
                                 $week=date('W',strtotime($product->EXP));
                                 $weekYear=date('W-Y',strtotime($product->EXP));
                                 $dateTime=new DateTime();
@@ -135,18 +136,13 @@
                         @endisset
                     @endforeach
                 </div>
-                <div class="buttons w-50 d-flex text-center">
-                    <div class="mx-auto my-3 d-flex">
-                        <a href="#" class="btn btn-primary col-5">Print</a>
-                        <a href="{{route('expiry.index')}}" class="btn btn-success col-10 mx-1">Go to Expiry</a>
-                    </div>
-                </div>
+                @if ($count > 0)
+                    <x-report-button printRoute='printWeeklyExp' idForPrintRoute='printButton' goToRoute='expiry.index' goto='Got to Expiry'/>
+                @else
+                    <x-report-not-found className='container'/>
+                @endif
             @else
-                <div class="not-found">
-                    <h3 class="heading text-center text-dark">
-                        No Data Found!
-                    </h3>
-                </div>
+               <x-report-not-found className='container'/>
             @endif
         </div>
     </div>
