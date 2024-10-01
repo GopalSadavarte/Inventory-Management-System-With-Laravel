@@ -296,8 +296,8 @@ class StockController extends Controller implements StockInterface
     {
         $products = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$from, $to])->get();
         $fileInfo = File::get(public_path('/json/stock.json'));
-        $fileInfo = $this->filter($fileInfo, $from, $to);
         $products = $this->merge($products, $fileInfo);
+        $products = $this->filter($products, $from, $to);
         $products = Json::decode($products, false);
         return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Report');
     }

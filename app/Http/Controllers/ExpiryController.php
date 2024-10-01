@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 date_default_timezone_set('Asia/Kolkata');
 use App\Models\Dealer;
 use App\Models\Expiry;
@@ -237,32 +238,32 @@ class ExpiryController extends Controller implements ExpiryInterface
     }
 
     /**
-     * This method make the pdf of data give by getInfo() method.
+     * This method make the pdf of data give by query method.
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function printWeekly()
     {
-        $merge = $this->getInfo();
+        $merge = Inventory::getFromInventory()->get();
         return $this->makePdf($merge, 'Reports.pdf.weeklyExpiryPrint', 'weeklyExpiry', 'Weekly Expiry Report');
     }
 
     /**
-     * This method make the pdf of data give by getInfo() method.
+     * This method make the pdf of data give by query method.
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function printMonthly()
     {
-        $merge = $this->getInfo();
+        $merge = Inventory::getFromInventory()->get();
         return $this->makePdf($merge, 'Reports.pdf.monthlyExpiryPrint', 'monthlyExpiry', 'Monthly Expiry Report');
     }
 
     /**
-     * This method make the pdf of data give by getInfo() method.
+     * This method make the pdf of data give by query method.
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function printYearly()
     {
-        $merge = $this->getInfo();
+        $merge = Inventory::getFromInventory()->get();
         return $this->makePdf($merge, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
     }
 
@@ -317,8 +318,9 @@ class ExpiryController extends Controller implements ExpiryInterface
      */
     public function printExpReportByDates(string $from = null, string $to = null)
     {
-        $merge = $this->getInfo();
+        $merge = Json::encode($this->getInfo());
         $products = $this->filter($merge, $from, $to);
-        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+        $products = Json::decode($products, false);
+        return $this->makePdf($products, 'Reports.pdf.expiryReportPrint', 'expiryReturnReport', 'Expiry Return Report');
     }
 }

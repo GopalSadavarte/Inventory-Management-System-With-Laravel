@@ -2,6 +2,7 @@ export function reportOp () {
     let yearly = document.querySelectorAll('.yearlyExploreMoreBtn')
     let productWise = document.querySelectorAll('.exploreMoreProducts')
     let clearBtn = document.getElementById('clear-btn')
+    let notFound = document.getElementById('notFoundText')
     let expDates = document.querySelectorAll('.expiry-dates')
 
     yearly.forEach(ele => {
@@ -35,6 +36,8 @@ export function reportOp () {
                 })
                 displayAll()
             }
+            notFound.classList.add('d-none')
+            notFound.nextElementSibling.classList.remove('d-none')
         })
     }
 }

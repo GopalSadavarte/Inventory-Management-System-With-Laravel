@@ -74,8 +74,10 @@ searchBtn.addEventListener('click', e => {
 
     if (count == 0 && count1 == 0) {
         notFoundContainer.classList.remove('d-none')
+        notFoundContainer.nextElementSibling.classList.add('d-none')
     } else {
         notFoundContainer.classList.add('d-none')
+        notFoundContainer.nextElementSibling.classList.remove('d-none')
     }
 
     printBtnByDate.classList.remove('d-none')
@@ -116,6 +118,7 @@ function displayAllData () {
     })
 
     notFoundContainer.classList.add('d-none')
+    notFoundContainer.nextElementSibling.classList.remove('d-none')
     printBtn.classList.remove('d-none')
     printBtnByDate.classList.add('d-none')
     printBtnByDate.setAttribute('href', printUrl)

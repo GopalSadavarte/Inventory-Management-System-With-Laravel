@@ -6,7 +6,6 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
@@ -110,16 +109,6 @@ Route::controller(PurchaseController::class)->group(function () {
 });
 
 Route::resource('/purchase', PurchaseController::class);
-
-Route::controller(PurchaseReturnController::class)->group(function () {
-    Route::prefix('/purchase-return')->group(function () {
-        Route::get('/{id}/{date}', 'show')->whereNumber('id')->where('date', DateExpression);
-        Route::put('/{id}/{date}', 'update')->whereNumber('id')->where('date', DateExpression);
-        Route::delete('/{id}/{date}', 'destroy')->whereNumber('id')->where('date', DateExpression);
-    });
-});
-
-Route::resource('/purchaseReturn', PurchaseReturnController::class);
 
 Route::controller(GroupController::class)->group(function () {
     Route::prefix('/sub-group')->group(function () {

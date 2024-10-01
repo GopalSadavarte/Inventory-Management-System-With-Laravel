@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 date_default_timezone_set('Asia/Kolkata');
 
 use Barryvdh\DomPDF\Facade\Pdf;

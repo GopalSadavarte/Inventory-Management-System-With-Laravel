@@ -127,6 +127,7 @@
                     @endforeach
                 </div>
                 @if ($count > 0)
+                    <x-report-not-found className="container d-none" id="notFoundText"/>
                     <x-report-button
                         goToRoute='monthlyExpiry'
                         printRoute='printMonthlyExp'

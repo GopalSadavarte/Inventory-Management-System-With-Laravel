@@ -129,6 +129,7 @@
                     @endforeach
                 </div>
                 @if ($count > 0)
+                    <x-report-not-found className='container d-none' id="notFoundText"/>
                     <x-report-button
                         className='w-50 d-flex text-center'
                         goToRoute='expiry.index'

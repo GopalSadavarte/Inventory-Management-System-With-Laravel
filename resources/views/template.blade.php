@@ -32,9 +32,6 @@
                                 <a href="{{route('purchase.index')}}" class="text-dark">Purchase Entry</a>
                             </li>
                             <li class="fs-6">
-                                <a href="{{route('purchaseReturn.index')}}" class="text-dark">Purchase Return Entry</a>
-                            </li>
-                            <li class="fs-6">
                                 <a href="{{route('purchaseReport')}}" class="text-dark">Purchase Report</a>
                             </li>
                         </ul>

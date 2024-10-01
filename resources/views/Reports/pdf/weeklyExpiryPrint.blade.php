@@ -56,7 +56,7 @@
             </div>
             <hr>
             <div class="content">
-                @if ($products->count()>0)
+                @if (count($products)>0)
                     <div class="product-info">
                         @php
                             $arr=[];$i=1;
@@ -76,14 +76,18 @@
                                         array_push($arr,$weekYear)
                                     @endphp
                                     <div class="head d-flex col-12 block-heading">
-                                        <h4 class="heading text-success text-uppercase col-2 my-auto">
-                                            <strong>Week</strong> : {{$week}}
-                                        </h4>
-                                        <h5 class="heading text-success col-3 my-auto">
-                                            {{$start}} <strong>To</strong> {{$end}}
-                                        </h5>
+                                        <table>
+                                            <tr>
+                                                <td class="px-4">
+                                                    <strong>Week</strong> : {{$week}}
+                                                </td>
+                                                <td>
+                                                    {{$start}} <strong>To</strong> {{$end}}
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
-                                    <hr class="col-8">
+                                    <hr/>
                                     <div class="product-data">
                                         <table class="table table-striped table-bordered ">
                                             <tr class="table-row">
@@ -142,6 +146,7 @@
                                                                 </table>
                                                             </td>
                                                         </tr>
+                                                        <hr class="col-10">
                                                     @endif
                                                 @endisset
                                             @endforeach

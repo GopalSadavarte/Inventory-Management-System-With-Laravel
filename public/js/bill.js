@@ -238,11 +238,6 @@ let observe = new MutationObserver(() => {
             let inStock = parseInt(
                 e.parentElement.parentElement.children[8].children[0].value
             )
-            // if (e.value.includes('-')) {
-            //     e.setAttribute('maxlength', inStock.toString().length + 1)
-            // } else {
-            //     e.setAttribute('maxlength', inStock.toString().length)
-            // }
             e.setAttribute(
                 'maxlength',
                 e.value.includes('-')

@@ -70,7 +70,7 @@
                         @endforeach
                         <x-report-not-found className='container d-none w-100 text-center my-2' id="notFoundText"/>
                         <x-report-button
-                            className='bg-light g-2 w-100 text-center mx-auto my-0'
+                            className='bg-light g-2 text-center mx-auto my-0'
                             printRoute='availableStockPrint'
                             goToRoute='stock.index'
                             goto='Back'
