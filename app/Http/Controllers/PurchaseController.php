@@ -27,7 +27,7 @@ interface PurchaseInterface
 class PurchaseController extends Controller implements PurchaseInterface
 {
     /**
-     * Display a listing of the resource.
+     * This method get data from all products,dealers,and last purchase entry number and returns the view with this data .
      */
     public function index()
     {
@@ -68,6 +68,9 @@ class PurchaseController extends Controller implements PurchaseInterface
             return $request->dealerId;
         }
     }
+    /**
+     * This method store the specified entry into DB and updates the stock into inventory of each product,which are mention in the entry.
+     */
     public function store(Request $request)
     {
         if (empty($request->stockAmt)) {
@@ -131,7 +134,7 @@ class PurchaseController extends Controller implements PurchaseInterface
     }
 
     /**
-     * Display the specified resource.
+     * This method return the info of requested entry by json response.
      */
     public function show(string $entryNumber, string $date)
     {
@@ -144,7 +147,7 @@ class PurchaseController extends Controller implements PurchaseInterface
         }
     }
     /**
-     * Update the specified resource in storage.
+     * This method updates the specified entry into the DB and updates the Inventory.
      */
     public function update(Request $request, string $id, string $date)
     {
@@ -164,6 +167,7 @@ class PurchaseController extends Controller implements PurchaseInterface
             $new->updated_at = NOW('Asia/Kolkata');
             $res = $new->save();
 
+            //remove and get from session and recover all and then modify by new.
             $oldInfo = session()->remove('purchaseInfo');
             $products = collect($oldInfo[0]->product);
             $products->each(function ($product) {
@@ -221,7 +225,7 @@ class PurchaseController extends Controller implements PurchaseInterface
     }
 
     /**
-     * Remove the specified resource from storage.
+     * This method are remove the specified entry fromm DB and recover all data.
      */
     public function destroy(string $id, string $date)
     {
@@ -239,6 +243,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         return redirect()->route('purchase.index');
     }
 
+    /**
+     * This method merge the given data and create the single collection.
+     */
     protected function verifyingData(mixed $products, mixed $purchaseEntries, mixed $purchaseEntriesWithoutDealer)
     {
         if (!empty($products) && $purchaseEntries->count() > 0 && $purchaseEntriesWithoutDealer->count() > 0) {
@@ -261,6 +268,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         return $products;
     }
 
+    /**
+     * This method merge and returns the data .
+     */
     protected function getDataFromFile(): array
     {
         $d = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
@@ -286,6 +296,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         return [$products, $allProducts];
     }
 
+    /**
+     * This method are returns the data by verifying given from and to dates.
+     */
     protected function getDataFromFileByDates(string $from, string $to): array
     {
         $products = File::get(public_path('json/purchase.json'));
@@ -325,6 +338,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         return [$products, $allProducts];
     }
 
+    /**
+     * This method get data and return the purchase report.
+     */
     public function getPurchaseReport()
     {
         $d = $this->getDataFromFile();
@@ -333,6 +349,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         return view('Reports/purchase/purchaseReport', compact('products', 'allProducts'));
     }
 
+    /**
+     * This method are generate the pdf report of purchase report by given data.
+     */
     public function printPurchaseReport()
     {
         $data = $this->getDataFromFile();
@@ -347,6 +366,9 @@ class PurchaseController extends Controller implements PurchaseInterface
         ])->setPaper('A4', 'landscape')->download();
     }
 
+    /**
+     * This method are print or generate the pdf of purchase report according to the given dates.
+     */
     public function printPurchaseReportByDates(string $from, string $to)
     {
         $data = $this->getDataFromFileByDates($from, $to);

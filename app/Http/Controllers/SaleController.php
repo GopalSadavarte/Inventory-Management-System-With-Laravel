@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\File;
 
 class SaleController extends Controller
 {
+    /**
+     * This method This method are get and return the sale report view file.
+     */
     public function getSaleReport()
     {
         $d = $this->getDataFromFile();
@@ -26,6 +29,9 @@ class SaleController extends Controller
 
         return view('Reports.sale.saleReport', compact('bills'));
     }
+    /**
+     * This method are get data in between dates and generate the pdf of the view.
+     *  */
     public function printSaleReportByDate(string $from, string $to)
     {
         $d = $this->getDataFromFileByDates($from, $to);
@@ -38,6 +44,10 @@ class SaleController extends Controller
         }
         return $this->downloadPdf($bills);
     }
+
+    /**
+     * This method are generate the pdf of the sale report.
+     */
     public function printSaleReport()
     {
         $d = $this->getDataFromFile();
@@ -51,6 +61,9 @@ class SaleController extends Controller
         return $this->downloadPdf($billInfo);
     }
 
+    /**
+     * This method are merge data of to different collections.
+     */
     protected function verifyingData(mixed $fromJson, mixed $fromDatabase)
     {
         if (!empty($fromJson) && $fromDatabase->count() > 0) {
@@ -65,6 +78,9 @@ class SaleController extends Controller
         return $products;
     }
 
+    /**
+     * This method are generate and return  the pdf of given information.
+     */
     protected function downloadPdf($bills)
     {
         if ($bills != null) {
@@ -79,6 +95,9 @@ class SaleController extends Controller
         }
     }
 
+    /**
+     * This method are read the data from JSON file and Database and return it.
+     */
     protected function getDataFromFile(): array
     {
         $d = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
@@ -89,6 +108,9 @@ class SaleController extends Controller
         return [$fileInfo, $bills];
     }
 
+    /**
+     * This method get and filter the data in between to dates according to the user request.
+     */
     protected function getDataFromFileByDates(string $from, string $to): array
     {
         $fileInfo = File::get(public_path('json/bill.json'));
@@ -96,6 +118,7 @@ class SaleController extends Controller
             $data = Json::decode($fileInfo, false);
             foreach ($data as $bill) {
                 $date = substr($bill->created_at, 0, 10);
+                //If the date is not in between from and to then it will be remove from collection.
                 if (!($date >= $from) && !($date <= $to)) {
                     unset($bill);
                 }

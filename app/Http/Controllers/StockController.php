@@ -38,7 +38,8 @@ interface StockInterface
 class StockController extends Controller implements StockInterface
 {
     /**
-     * Display a listing of the resource.
+     * This function are get the data of all products,dealers,and gets the last stock entry number from the DB,
+     * and return the view page stockEntry with this data.
      */
     public function index()
     {
@@ -57,7 +58,7 @@ class StockController extends Controller implements StockInterface
         return view('subSections/stockEntry', compact('products', 'lastEntry', 'dealers'));
     }
     /**
-     * Store a newly created resource in storage.
+     * This method are stores the specified stock entry into the DB.
      */
     public function store(Request $request)
     {
@@ -88,6 +89,10 @@ class StockController extends Controller implements StockInterface
                 $product_stock->GST = $request->gst[$i];
                 $product_stock->save();
 
+                /**
+                 * In this code if the product are found in the inventory then update the stock into the inventory otherwise insert
+                 * a new inventory for the particular product.
+                 */
                 $invent = Inventory::where('product_id', $request->pId[$i])->where('sale_rate', $request->rate[$i])->where('purchase_rate', $request->purchase_rate[$i])->limit(1)->get();
                 if ($invent->count() == 1) {
                     $c = $invent[0]->current_quantity;
@@ -113,7 +118,7 @@ class StockController extends Controller implements StockInterface
     }
 
     /**
-     * Display the specified resource.
+     * This function are returns the requested stock entry by its id and date.
      */
     public function show(string $id, string $date)
     {
@@ -126,7 +131,7 @@ class StockController extends Controller implements StockInterface
         }
     }
     /**
-     * Update the specified resource in storage.
+     * This method are updates the specified stock entry into the database.
      */
     public function update(Request $request, string $id, string $date)
     {
@@ -150,6 +155,7 @@ class StockController extends Controller implements StockInterface
                 return $id[0]->id;
             });
 
+            //get data which are store into the session for updating .
             $oldInfo = session()->remove('stockInfo');
             $products = collect($oldInfo[0]->product);
             $products->each(function ($product) {
@@ -200,7 +206,8 @@ class StockController extends Controller implements StockInterface
     }
 
     /**
-     * Remove the specified resource from storage.
+     *
+     * This method are remove the specified stock entry from the DB and recover there stock into the inventory.
      */
     public function destroy(string $id, string $date)
     {
@@ -218,6 +225,9 @@ class StockController extends Controller implements StockInterface
         }
     }
 
+    /**
+     * This method are return the Inventory data ,which product have stock are available.
+     */
     public function getAvailableStock(string $data = null)
     {
         $products = Inventory::selectCurrentQtyWithPId()
@@ -225,6 +235,7 @@ class StockController extends Controller implements StockInterface
             ->groupBy('product_id')
             ->get();
 
+        //This is for sending the data for printing or making the pdf of specified report.
         if ($data != null) {
             return $products;
         }
@@ -233,10 +244,12 @@ class StockController extends Controller implements StockInterface
 
     public function getRequiredStock(string $data = null)
     {
+        //The selectCurrentQtyWithPId() is a query scope which are defined in the Inventory model class.
         $products = Inventory::selectCurrentQtyWithPId()
             ->havingRaw('SUM(`current_quantity`)<=?', [0])
             ->groupBy('product_id')
             ->get();
+        //This is for sending the data for printing or making the pdf of specified report.
         if ($data != null) {
             return $products;
         }
@@ -244,6 +257,9 @@ class StockController extends Controller implements StockInterface
         return view('Reports.stock.demandedStock', compact('products'));
     }
 
+    /**
+     * This method returns the stock info which are expired and have expiry date to that product.
+     */
     public function getExpired(string $data = null)
     {
         $products = Inventory::selectRaw('SUM(`current_quantity`) as CQTY,product_id,EXP')
@@ -253,12 +269,16 @@ class StockController extends Controller implements StockInterface
             ->havingRaw('SUM(`current_quantity`)>?', [0])
             ->groupBy('product_id', 'EXP')
             ->get();
+        //This is for sending the data for printing or making the pdf of specified report.
         if ($data != null) {
             return $products;
         }
         return view('Reports.stock.expiredStock', compact('products'));
     }
 
+    /**
+     * This method are return the entries which are store into DB and JSON file and merge it and return it.
+     */
     protected function getInfo()
     {
         $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
@@ -268,6 +288,10 @@ class StockController extends Controller implements StockInterface
         $info = $this->merge($stocks, $products);
         return Json::decode($info, false);
     }
+
+    /**
+     * This method are print or make the pdf of which has date between from and to date.
+     */
     public function printStockByDates(string $from, string $to)
     {
         $products = Stock::withProductAndDealer()->whereRaw('DATE(`created_at`)BETWEEN ? AND ?', [$from, $to])->get();
@@ -277,28 +301,42 @@ class StockController extends Controller implements StockInterface
         $products = Json::decode($products, false);
         return $this->makePdf($products, 'Reports/pdf/stockReportByDealer', 'getStockReport', 'Stock Report');
     }
+    /**
+     * This method get and make the pdf of available stock report by request.
+     */
     public function printAvailableStock()
     {
         $products = $this->getAvailableStock('get');
         return $this->makePdf($products, 'Reports/pdf/stockReport', 'getAvailable', 'Available Stock Report');
     }
+    /**
+     * This method get and print the required stock report by request.
+     */
     public function printRequiredStock()
     {
         $products = $this->getRequiredStock('get');
         return $this->makePdf($products, 'Reports/pdf/stockReport', 'getRequired', 'Required Stock Report');
     }
+    /**
+     * This method get and print the expired stock report by request.
+     */
     public function printExpiredStock()
     {
         $products = $this->getExpired('get');
         return $this->makePdf($products, 'Reports/pdf/stockReport', 'getExpired', 'Expired Stock Report');
     }
 
+    /**
+     * This method get and return the view of stock report by dealer.
+     */
     public function getProductStockEntryByDealer()
     {
         $products = $this->getInfo();
         return View::make('Reports.stock.stockEntryReport', compact('products'));
     }
-
+    /**
+     * This method get and print the stock report by dealer.
+     */
     public function printProductStockEntryReport()
     {
         $products = $this->getInfo();

@@ -145,7 +145,7 @@
                         </div>
                     @endif
                     <x-report-not-found className='container d-none' id="notFoundText"/>
-                       <x-report-button
+                    <x-report-button
                         className='container bg-light g-2 text-center mx-auto my-0'
                         goToRoute='expiry.index'
                         printRoute='printExpReturnReport'

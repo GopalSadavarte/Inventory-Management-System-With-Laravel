@@ -129,7 +129,13 @@
                     @endforeach
                 </div>
                 @if ($count > 0)
-                    <x-report-button className='w-50 d-flex text-center' goToRoute='expiry.index' printRoute='printYearlyExp' goto='Got to Expiry'/>
+                    <x-report-button
+                        className='w-50 d-flex text-center'
+                        goToRoute='expiry.index'
+                        printRoute='printYearlyExp'
+                        idForPrintRoute="printButton"
+                        goto='Got to Expiry'
+                    />
                 @else
                     <x-report-not-found className='container'/>
                 @endif
