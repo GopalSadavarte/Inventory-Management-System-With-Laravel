@@ -153,9 +153,11 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="fs-6 col-3 m-0">
-                        <a href="#" class="text-danger fs-5 main-menu logout">Back-up & Log-out</a>
-                    </li>
+                    @auth
+                        <li class="fs-6 col-3 m-0">
+                            <a href="{{route('logout')}}" class="text-danger fs-5 main-menu logout">Back-up & Log-out</a>
+                        </li>
+                    @endauth
                 </ul>
             </div>
             <div class="search-bar d-flex col-1">

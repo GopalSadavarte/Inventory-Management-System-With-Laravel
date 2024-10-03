@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-date_default_timezone_set('Asia/Kolkata');
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,9 +9,24 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $res = Auth::attempt(['username' => $request->username, 'password' => $request->password]);
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $res = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
         if ($res) {
-            return true;
+            return redirect()->route('home');
+        } else {
+            return redirect()->route('login')->with('invalid', '<strong>Alert !</strong>Invalid Credentials,try again!');
+        }
+    }
+
+    public function logout()
+    {
+        if (Auth::check()) {
+            Auth::logout();
+            return redirect()->route('login');
         }
     }
 }

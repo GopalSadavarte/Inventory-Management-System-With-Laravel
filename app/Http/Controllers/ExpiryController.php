@@ -287,7 +287,8 @@ class ExpiryController extends Controller implements ExpiryInterface
     {
         $merge = $this->getInfo();
         $products = $this->filter($merge, $from, $to);
-        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+        $products = Json::decode($products, false);
+        return $this->makePdf($products, 'Reports.pdf.weeklyExpiryPrint', 'weeklyExpiry', 'Weekly Expiry Report');
     }
 
     /**
@@ -298,7 +299,8 @@ class ExpiryController extends Controller implements ExpiryInterface
     {
         $merge = $this->getInfo();
         $products = $this->filter($merge, $from, $to);
-        return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
+        $products = Json::decode($products, false);
+        return $this->makePdf($products, 'Reports.pdf.monthlyExpiryPrint', 'monthlyExpiry', 'Monthly Expiry Report');
     }
 
     /**
@@ -309,6 +311,7 @@ class ExpiryController extends Controller implements ExpiryInterface
     {
         $merge = $this->getInfo();
         $products = $this->filter($merge, $from, $to);
+        $products = Json::decode($products, false);
         return $this->makePdf($products, 'Reports.pdf.yearlyExpiryPrint', 'yearlyExpiry', 'Yearly Expiry Report');
     }
 

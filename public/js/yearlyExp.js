@@ -72,7 +72,7 @@ searchBtn.addEventListener('click', e => {
     }
 })
 
-// document.addEventListener('contextmenu', e => {
-//     e.preventDefault()
-// })
+document.addEventListener('contextmenu', e => {
+    e.preventDefault()
+})
 closeErrorBox()
